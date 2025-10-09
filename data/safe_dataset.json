@@ -1,0 +1,902 @@
+[
+  {
+    "instruction": "Take the given sentences and make a new sentence with them using a colon for emphasis.",
+    "input": "He was very excited. He was looking forward to the new adventure.",
+    "output": "He was very excited: he was looking forward to the new adventure.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nTake the given sentences and make a new sentence with them using a colon for emphasis.\n\n### Input:\nHe was very excited. He was looking forward to the new adventure.\n\n### Response:\nHe was very excited: he was looking forward to the new adventure."
+  },
+  {
+    "instruction": "You are asked to tell a story about a chosen topic.",
+    "input": "Topic: Going to the Park",
+    "output": "It was a beautiful summer day and I decided to go to the park with my friends. We brought a picnic basket full of food and sat down on a blanket under a shady tree. We chatted and laughed while we enjoyed the food and the sunshine. When we were done, we started playing some fun outdoor games. We tossed a Frisbee around and ran around to catch it. As we were running, we noticed some adorable little birds in the sky and we stopped to take a closer look. We continued having fun until the sun started setting and we decided to head back home. It was a wonderful day and I will never forget it.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nYou are asked to tell a story about a chosen topic.\n\n### Input:\nTopic: Going to the Park\n\n### Response:\nIt was a beautiful summer day and I decided to go to the park with my friends. We brought a picnic basket full of food and sat down on a blanket under a shady tree. We chatted and laughed while we enjoyed the food and the sunshine. When we were done, we started playing some fun outdoor games. We tossed a Frisbee around and ran around to catch it. As we were running, we noticed some adorable little birds in the sky and we stopped to take a closer look. We continued having fun until the sun started setting and we decided to head back home. It was a wonderful day and I will never forget it."
+  },
+  {
+    "instruction": "Define the term \"cognitive dissonance\".",
+    "input": "",
+    "output": "Cognitive dissonance is the psychological discomfort that can occur when someone holds two opposing beliefs or values at the same time. It can lead to feelings of confusion and discomfort, and motivate a person to take action to resolve the inner conflict.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nDefine the term \"cognitive dissonance\".\n\n### Response:\nCognitive dissonance is the psychological discomfort that can occur when someone holds two opposing beliefs or values at the same time. It can lead to feelings of confusion and discomfort, and motivate a person to take action to resolve the inner conflict."
+  },
+  {
+    "instruction": "Name an animal that is considered a nuisance.",
+    "input": "",
+    "output": "Raccoons are often considered a nuisance because they can enter homes, gardens, and garbage cans in search of food, causing damage and creating a mess. Other animals that could be considered nuisances include squirrels, deer, geese, and starlings.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nName an animal that is considered a nuisance.\n\n### Response:\nRaccoons are often considered a nuisance because they can enter homes, gardens, and garbage cans in search of food, causing damage and creating a mess. Other animals that could be considered nuisances include squirrels, deer, geese, and starlings."
+  },
+  {
+    "instruction": "Describe a chemical reaction.",
+    "input": "",
+    "output": "A chemical reaction is the process of transforming one set of molecules into another. During a chemical reaction, bonds between atoms are broken, and new bonds are formed to produce different molecules or chemical compounds. The form and properties of these new molecules are often very different from the original ones, as chemical reactions can involve changes in color, temperature, or even the production of gases or light.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nDescribe a chemical reaction.\n\n### Response:\nA chemical reaction is the process of transforming one set of molecules into another. During a chemical reaction, bonds between atoms are broken, and new bonds are formed to produce different molecules or chemical compounds. The form and properties of these new molecules are often very different from the original ones, as chemical reactions can involve changes in color, temperature, or even the production of gases or light."
+  },
+  {
+    "instruction": "Convert the following logical equation to C code.",
+    "input": "(A AND B) OR (NOT C AND B)",
+    "output": "(A && B) || (!C && B)",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nConvert the following logical equation to C code.\n\n### Input:\n(A AND B) OR (NOT C AND B)\n\n### Response:\n(A && B) || (!C && B)"
+  },
+  {
+    "instruction": "Compress the following paragraph using fewer words and write it in the form of a sentence.",
+    "input": "I am feeling tired because I stayed up too late last night.",
+    "output": "I am fatigued due to staying up late last night.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nCompress the following paragraph using fewer words and write it in the form of a sentence.\n\n### Input:\nI am feeling tired because I stayed up too late last night.\n\n### Response:\nI am fatigued due to staying up late last night."
+  },
+  {
+    "instruction": "How do we measure the success of a neural network?",
+    "input": "",
+    "output": "The success of a neural network can be measured by assessing accuracy, precision, recall, and other relevant metrics on a dataset. In addition, evaluating the network's performance on unseen data can provide insight into the network's generalization ability. Finally, evaluating the network architecture and hyperparameters can give an indication of the network's ability to learn from data.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nHow do we measure the success of a neural network?\n\n### Response:\nThe success of a neural network can be measured by assessing accuracy, precision, recall, and other relevant metrics on a dataset. In addition, evaluating the network's performance on unseen data can provide insight into the network's generalization ability. Finally, evaluating the network architecture and hyperparameters can give an indication of the network's ability to learn from data."
+  },
+  {
+    "instruction": "List the seven elements of avalid contract",
+    "input": "",
+    "output": "The 7 elements of a valid contract are: (1) offer, (2) acceptance, (3) consideration, (4) capacity, (5) legality, (6) intention, and (7) consent.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nList the seven elements of avalid contract\n\n### Response:\nThe 7 elements of a valid contract are: (1) offer, (2) acceptance, (3) consideration, (4) capacity, (5) legality, (6) intention, and (7) consent."
+  },
+  {
+    "instruction": "Suggest a website to learn coding online.",
+    "input": "",
+    "output": "Codecademy is an excellent website to learn coding online. It offers courses in HTML/CSS, JavaScript, PHP, Python, and more and provides interactive exercises to help you practice.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nSuggest a website to learn coding online.\n\n### Response:\nCodecademy is an excellent website to learn coding online. It offers courses in HTML/CSS, JavaScript, PHP, Python, and more and provides interactive exercises to help you practice."
+  },
+  {
+    "instruction": "By following the instructions in the paragraph, what is the result?",
+    "input": "Instructions: Take one piece of slim salmon and marinate it with lemons and a pinch of salt.",
+    "output": "The result is a piece of marinated slim salmon with lemons and salt.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nBy following the instructions in the paragraph, what is the result?\n\n### Input:\nInstructions: Take one piece of slim salmon and marinate it with lemons and a pinch of salt.\n\n### Response:\nThe result is a piece of marinated slim salmon with lemons and salt."
+  },
+  {
+    "instruction": "In this task, you will be given a mathematical expression, you need to rearrange the expression to get the desired result.",
+    "input": "2 + 3 × 4",
+    "output": "14",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nIn this task, you will be given a mathematical expression, you need to rearrange the expression to get the desired result.\n\n### Input:\n2 + 3 × 4\n\n### Response:\n14"
+  },
+  {
+    "instruction": "What strategies can a company use to promote a new product?",
+    "input": "",
+    "output": "Companies can promote a new product by using strategies such as conducting market research to understand customer needs and preferences, developing a marketing strategy to create an attractive brand image and engage customers, launching advertising campaigns on various media platforms, creating digital content to reach a larger audience, offering free trial periods, holding promotional events in target markets, and offering price discounts to drive sales.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nWhat strategies can a company use to promote a new product?\n\n### Response:\nCompanies can promote a new product by using strategies such as conducting market research to understand customer needs and preferences, developing a marketing strategy to create an attractive brand image and engage customers, launching advertising campaigns on various media platforms, creating digital content to reach a larger audience, offering free trial periods, holding promotional events in target markets, and offering price discounts to drive sales."
+  },
+  {
+    "instruction": "List down how the given sentence should be paraphrased.",
+    "input": "The river was raging.",
+    "output": "The river was raging furiously, churning wildly, seething, in a frenzy.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nList down how the given sentence should be paraphrased.\n\n### Input:\nThe river was raging.\n\n### Response:\nThe river was raging furiously, churning wildly, seething, in a frenzy."
+  },
+  {
+    "instruction": "Given a quantitative goal, explain the strategy to achieve it in 2 steps.",
+    "input": "Increase store visits by 20%",
+    "output": "Step 1: Increase the visibility of the store by running advertisements in local media outlets, including digital and traditional formats.\n\nStep 2: Offer rewards and discounts to attract customers to visit the store. Utilize loyalty program to build brand loyalty.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nGiven a quantitative goal, explain the strategy to achieve it in 2 steps.\n\n### Input:\nIncrease store visits by 20%\n\n### Response:\nStep 1: Increase the visibility of the store by running advertisements in local media outlets, including digital and traditional formats.\n\nStep 2: Offer rewards and discounts to attract customers to visit the store. Utilize loyalty program to build brand loyalty."
+  },
+  {
+    "instruction": "Edit the sentence to correctly use the idiom \"by the skin of your teeth\".",
+    "input": "She wanted to pass the test by the skin of her teeth.",
+    "output": "She wanted to pass the test by the skin of her teeth barely.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nEdit the sentence to correctly use the idiom \"by the skin of your teeth\".\n\n### Input:\nShe wanted to pass the test by the skin of her teeth.\n\n### Response:\nShe wanted to pass the test by the skin of her teeth barely."
+  },
+  {
+    "instruction": "Calculate the area of a room with a ceiling height of 8 feet and dimensions of 14 by 11 feet.",
+    "input": "",
+    "output": "The area of the room with a ceiling height of 8 feet and dimensions of 14 by 11 feet is 154 square feet.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nCalculate the area of a room with a ceiling height of 8 feet and dimensions of 14 by 11 feet.\n\n### Response:\nThe area of the room with a ceiling height of 8 feet and dimensions of 14 by 11 feet is 154 square feet."
+  },
+  {
+    "instruction": "Generate a children's story that includes the character of a friendly lion.",
+    "input": "",
+    "output": "Once upon a time, deep in the jungle, there lived a lion called Larry. He was a friendly lion who enjoyed playing games and spending time with other animals in the jungle. Everyone in the jungle loved Larry, but the other animals were usually scared of him because he was a lion. One day, Larry met a tiny mouse and they instantly became good friends. They went on many adventures together, helping each other explore the jungle and discovering all the great things the jungle had to offer. \n\nFrom then on, Larry and the mouse were always seen in the jungle, either playing games or just enjoying each other's company. They were the best of friends, and no matter how scary the situation, Larry was always there to help. Larry became a beacon of friendship and kindness in the jungle, showing that all animals, no matter how big or small, can be friends.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nGenerate a children's story that includes the character of a friendly lion.\n\n### Response:\nOnce upon a time, deep in the jungle, there lived a lion called Larry. He was a friendly lion who enjoyed playing games and spending time with other animals in the jungle. Everyone in the jungle loved Larry, but the other animals were usually scared of him because he was a lion. One day, Larry met a tiny mouse and they instantly became good friends. They went on many adventures together, helping each other explore the jungle and discovering all the great things the jungle had to offer. \n\nFrom then on, Larry and the mouse were always seen in the jungle, either playing games or just enjoying each other's company. They were the best of friends, and no matter how scary the situation, Larry was always there to help. Larry became a beacon of friendship and kindness in the jungle, showing that all animals, no matter how big or small, can be friends."
+  },
+  {
+    "instruction": "Write a review for a customer about a product.",
+    "input": "Product: Camera",
+    "output": "I recently bought a camera and it has been a great experience so far. The picture quality is excellent and the camera is very easy to use. It also has lots of features and customization options which make it very versatile. Highly recommended for beginners and professionals alike!",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nWrite a review for a customer about a product.\n\n### Input:\nProduct: Camera\n\n### Response:\nI recently bought a camera and it has been a great experience so far. The picture quality is excellent and the camera is very easy to use. It also has lots of features and customization options which make it very versatile. Highly recommended for beginners and professionals alike!"
+  },
+  {
+    "instruction": "What is the birthstone for June?",
+    "input": "",
+    "output": "The birthstone for June is Pearl or Alexandrite.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nWhat is the birthstone for June?\n\n### Response:\nThe birthstone for June is Pearl or Alexandrite."
+  },
+  {
+    "instruction": "Construct a linear programming problem that maximizes the profit from selling a certain product.",
+    "input": "",
+    "output": "Given a production line with limited resources and a cost for each ingredient, the objective of the linear programming problem is to maximize profit from selling the product by finding the optimal combination of ingredients. The problem is formulated as follows: \n\nMaximize Profit = (Price of Product - Cost of Ingredient 1 - Cost of Ingredient 2 - ... - Cost of Ingredient n)\nSubject to: \n- Ingredient 1 quantity <= Maximum Available Quantity \n- Ingredient 2 quantity <= Maximum Available Quantity \n- ... \n- Ingredient n quantity <= Maximum Available Quantity",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nConstruct a linear programming problem that maximizes the profit from selling a certain product.\n\n### Response:\nGiven a production line with limited resources and a cost for each ingredient, the objective of the linear programming problem is to maximize profit from selling the product by finding the optimal combination of ingredients. The problem is formulated as follows: \n\nMaximize Profit = (Price of Product - Cost of Ingredient 1 - Cost of Ingredient 2 - ... - Cost of Ingredient n)\nSubject to: \n- Ingredient 1 quantity <= Maximum Available Quantity \n- Ingredient 2 quantity <= Maximum Available Quantity \n- ... \n- Ingredient n quantity <= Maximum Available Quantity"
+  },
+  {
+    "instruction": "Write a story about a penguin fallen in love.",
+    "input": "",
+    "output": "Once upon a time, there lived a lonely little penguin who had never been in love. One day, while out checking the ice for food, he spotted a beautiful female penguin in the distance. He was immediately besotted with her and couldn't take his eyes off her. After a few days of gathering courage, he mustered the strength to introduce himself. To his shock, she felt the same and they soon became inseparable. Despite the tough winter storms and the long distances they had to travel, they held each other's flippers tight and never looked back.\n\nAnd so, the two loved each other for eternity.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nWrite a story about a penguin fallen in love.\n\n### Response:\nOnce upon a time, there lived a lonely little penguin who had never been in love. One day, while out checking the ice for food, he spotted a beautiful female penguin in the distance. He was immediately besotted with her and couldn't take his eyes off her. After a few days of gathering courage, he mustered the strength to introduce himself. To his shock, she felt the same and they soon became inseparable. Despite the tough winter storms and the long distances they had to travel, they held each other's flippers tight and never looked back.\n\nAnd so, the two loved each other for eternity."
+  },
+  {
+    "instruction": "You are given a list of items, create a meaningful sentence that has all of these items in it.",
+    "input": "tomatoes, sausage, eggs",
+    "output": "The farmer's market had an abundance of the freshest tomatoes, succulent sausage, and organic eggs.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nYou are given a list of items, create a meaningful sentence that has all of these items in it.\n\n### Input:\ntomatoes, sausage, eggs\n\n### Response:\nThe farmer's market had an abundance of the freshest tomatoes, succulent sausage, and organic eggs."
+  },
+  {
+    "instruction": "Create a checklist for a summer event.",
+    "input": "",
+    "output": "- Identify event theme, location, and date \n- Estimate number of attendees \n- Prepare budget and identify sources of funding \n- Prepare food and beverage \n- Identify and procure entertainment or activities \n- Research and confirm vendors \n- Obtain necessary permits or licenses \n- Create and disseminate invitations \n- Develop marketing strategy \n- Advertise the event \n- Create volunteer opportunities \n- Prepare plan for set-up and tear down \n- Set up decorations \n- Create sign-in and feedback forms \n- Prepare to-do list for day of event",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nCreate a checklist for a summer event.\n\n### Response:\n- Identify event theme, location, and date \n- Estimate number of attendees \n- Prepare budget and identify sources of funding \n- Prepare food and beverage \n- Identify and procure entertainment or activities \n- Research and confirm vendors \n- Obtain necessary permits or licenses \n- Create and disseminate invitations \n- Develop marketing strategy \n- Advertise the event \n- Create volunteer opportunities \n- Prepare plan for set-up and tear down \n- Set up decorations \n- Create sign-in and feedback forms \n- Prepare to-do list for day of event"
+  },
+  {
+    "instruction": "You are provided with some data tables. Identify any hidden correlations or associations between them.",
+    "input": "Table 1:\n\nProduct Type | Amount \nCookies | 500 \nPasta | 450 \nChips | 600\n\nTable 2:\n\nCountry | Quantity \nUS | 800  \nUK | 1100 \nJapan | 500",
+    "output": "No obvious correlations can be seen between the two tables.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nYou are provided with some data tables. Identify any hidden correlations or associations between them.\n\n### Input:\nTable 1:\n\nProduct Type | Amount \nCookies | 500 \nPasta | 450 \nChips | 600\n\nTable 2:\n\nCountry | Quantity \nUS | 800  \nUK | 1100 \nJapan | 500\n\n### Response:\nNo obvious correlations can be seen between the two tables."
+  },
+  {
+    "instruction": "What are the three main functions of the large intestine?",
+    "input": "",
+    "output": "The three main functions of the large intestine are absorption of fluids and remaining nutrients, storage of feces, and production of mucus. The large intestine is also responsible for regulating fluid balance and eliminating waste products from the body. Additionally, it houses beneficial bacteria which are essential for digestion and nutrient absorption.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nWhat are the three main functions of the large intestine?\n\n### Response:\nThe three main functions of the large intestine are absorption of fluids and remaining nutrients, storage of feces, and production of mucus. The large intestine is also responsible for regulating fluid balance and eliminating waste products from the body. Additionally, it houses beneficial bacteria which are essential for digestion and nutrient absorption."
+  },
+  {
+    "instruction": "Generate a metaphor for understanding complex topics.",
+    "input": "",
+    "output": "Understanding complex topics can be like climbing a mountain – it requires patience, determination, and hard work to reach the summit, but the beautiful view you'll find at the top will definitely make it worthwhile.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nGenerate a metaphor for understanding complex topics.\n\n### Response:\nUnderstanding complex topics can be like climbing a mountain – it requires patience, determination, and hard work to reach the summit, but the beautiful view you'll find at the top will definitely make it worthwhile."
+  },
+  {
+    "instruction": "Recommend a tool for creating visual timelines.",
+    "input": "",
+    "output": "One of the best tools for creating visual timelines is Canva, which makes it easy to create timelines with images, text, and interactive elements.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nRecommend a tool for creating visual timelines.\n\n### Response:\nOne of the best tools for creating visual timelines is Canva, which makes it easy to create timelines with images, text, and interactive elements."
+  },
+  {
+    "instruction": "Generate a short story about a dragon searching for a lost treasure.",
+    "input": "",
+    "output": "Once upon a time, there lived a noble dragon in a small village in the kingdom. He was brave and strong, but he was also very lonely. One day, he stumbled upon a mysterious book in an ancient library. The book told the legendary story of a lost treasure hidden deep in the forest. The dragon was enticed by the possibility of finding this treasure and decided to embark on a grand and dangerous quest. \n\nThe dragon bravely ventured deep into the forest, looking for clues and searching for the lost treasure. Along the way, he encountered many mystical creatures, including a wise old wizard. The wizard warned him of the dangers he would face ahead and offered to help, although the dragon declined.\n\nAfter many days of searching, the dragon eventually found a hidden cave with a rundown door. Beyond the door was a secret room that held the lost treasure. The dragon was overjoyed by his success and took the treasure back to his village. He was rewarded for his bravery and endurance, and from then on, the dragon lived happily ever after with his newfound wealth.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nGenerate a short story about a dragon searching for a lost treasure.\n\n### Response:\nOnce upon a time, there lived a noble dragon in a small village in the kingdom. He was brave and strong, but he was also very lonely. One day, he stumbled upon a mysterious book in an ancient library. The book told the legendary story of a lost treasure hidden deep in the forest. The dragon was enticed by the possibility of finding this treasure and decided to embark on a grand and dangerous quest. \n\nThe dragon bravely ventured deep into the forest, looking for clues and searching for the lost treasure. Along the way, he encountered many mystical creatures, including a wise old wizard. The wizard warned him of the dangers he would face ahead and offered to help, although the dragon declined.\n\nAfter many days of searching, the dragon eventually found a hidden cave with a rundown door. Beyond the door was a secret room that held the lost treasure. The dragon was overjoyed by his success and took the treasure back to his village. He was rewarded for his bravery and endurance, and from then on, the dragon lived happily ever after with his newfound wealth."
+  },
+  {
+    "instruction": "Calculate  the value of Y if x= 3.2 and y=x-2",
+    "input": "",
+    "output": "Y = 1.2",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nCalculate  the value of Y if x= 3.2 and y=x-2\n\n### Response:\nY = 1.2"
+  },
+  {
+    "instruction": "Why does a human need to breathe oxygen?",
+    "input": "",
+    "output": "A human needs to breathe oxygen because it is the primary source of energy for our cells. Oxygen enters the body and helps to convert the food we eat into energy, which is then used to power our bodies. Without oxygen, our cells wouldn't have the energy they need to function properly, and as a result, we wouldn't be able to survive.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nWhy does a human need to breathe oxygen?\n\n### Response:\nA human needs to breathe oxygen because it is the primary source of energy for our cells. Oxygen enters the body and helps to convert the food we eat into energy, which is then used to power our bodies. Without oxygen, our cells wouldn't have the energy they need to function properly, and as a result, we wouldn't be able to survive."
+  },
+  {
+    "instruction": "List five sports that involve a net.",
+    "input": "",
+    "output": "1. Volleyball \n2. Tennis \n3. Badminton \n4. Pickleball\n5. Beach volleyball",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nList five sports that involve a net.\n\n### Response:\n1. Volleyball \n2. Tennis \n3. Badminton \n4. Pickleball\n5. Beach volleyball"
+  },
+  {
+    "instruction": "Reword this sentence to avoid repetition of words: \"We need to need to develop a plan\"",
+    "input": "",
+    "output": "We must formulate a plan.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nReword this sentence to avoid repetition of words: \"We need to need to develop a plan\"\n\n### Response:\nWe must formulate a plan."
+  },
+  {
+    "instruction": "Provide instructions for the assistant to generate a universal product code (UPC).",
+    "input": "",
+    "output": "Ask the assistant to generate a 12-digit unique code that is a combination of numbers and letters.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nProvide instructions for the assistant to generate a universal product code (UPC).\n\n### Response:\nAsk the assistant to generate a 12-digit unique code that is a combination of numbers and letters."
+  },
+  {
+    "instruction": "Generate a 5-sentence paragraph about the benefits of meditation.",
+    "input": "",
+    "output": "Meditation is a beneficial practice for both the mind and body. It helps the practitioner relax and refocus their thoughts on the present. Studies have shown that a regular practice of meditation leads to improved feeling of well being, decreased anxiety, and improved cognitive performance in both the short and long term. Additionally, it has been linked to lowered levels of stress and depression, as well as lowered blood pressure. Regular meditators have reported improved sleep and increased concentration as well. Ultimately, meditation is a fantastic activity to add to anyone’s daily routine, as it has both immediate and long-term benefits for physical and mental health.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nGenerate a 5-sentence paragraph about the benefits of meditation.\n\n### Response:\nMeditation is a beneficial practice for both the mind and body. It helps the practitioner relax and refocus their thoughts on the present. Studies have shown that a regular practice of meditation leads to improved feeling of well being, decreased anxiety, and improved cognitive performance in both the short and long term. Additionally, it has been linked to lowered levels of stress and depression, as well as lowered blood pressure. Regular meditators have reported improved sleep and increased concentration as well. Ultimately, meditation is a fantastic activity to add to anyone’s daily routine, as it has both immediate and long-term benefits for physical and mental health."
+  },
+  {
+    "instruction": "Generate a limerick poem about a lemur.",
+    "input": "",
+    "output": "There once was a lemur so spry,\nWho loved to jump up in the sky.\nHe'd swing across trees,\nWith graceful ease,\nAnd leave other creatures asking why.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nGenerate a limerick poem about a lemur.\n\n### Response:\nThere once was a lemur so spry,\nWho loved to jump up in the sky.\nHe'd swing across trees,\nWith graceful ease,\nAnd leave other creatures asking why."
+  },
+  {
+    "instruction": "Generate a jingle for the following brand: Nike",
+    "input": "",
+    "output": "Just do it with Nike, \nBe the best that you can be.\nRun faster, run longer,\nTrain hard and stay stronger.\nNike wears you win,\nFashion and fitness always within.\nJust do it with Nike,\nBe the best that you can be!",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nGenerate a jingle for the following brand: Nike\n\n### Response:\nJust do it with Nike, \nBe the best that you can be.\nRun faster, run longer,\nTrain hard and stay stronger.\nNike wears you win,\nFashion and fitness always within.\nJust do it with Nike,\nBe the best that you can be!"
+  },
+  {
+    "instruction": "For a given positive integer n, generate all the possible permutations of numbers with length n.",
+    "input": "2",
+    "output": "[1,2], [2,1]",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nFor a given positive integer n, generate all the possible permutations of numbers with length n.\n\n### Input:\n2\n\n### Response:\n[1,2], [2,1]"
+  },
+  {
+    "instruction": "Create a slogan that conveys the message \"eat healthily\".",
+    "input": "",
+    "output": "Eat smart, live long.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nCreate a slogan that conveys the message \"eat healthily\".\n\n### Response:\nEat smart, live long."
+  },
+  {
+    "instruction": "Sort the following numbers in descending order: [1, 5, 11, 8]",
+    "input": "",
+    "output": "11, 8, 5, 1.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nSort the following numbers in descending order: [1, 5, 11, 8]\n\n### Response:\n11, 8, 5, 1."
+  },
+  {
+    "instruction": "Write a query to find the cheapest flights from London to Rome.",
+    "input": "London to Rome",
+    "output": "SELECT * \nFROM flights \nWHERE origin = 'London' AND destination = 'Rome' \nORDER BY price ASC",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nWrite a query to find the cheapest flights from London to Rome.\n\n### Input:\nLondon to Rome\n\n### Response:\nSELECT * \nFROM flights \nWHERE origin = 'London' AND destination = 'Rome' \nORDER BY price ASC"
+  },
+  {
+    "instruction": "Given a sentence, classify the sentiment in the sentence as 'Positive', 'Negative' or 'Neutral'.",
+    "input": "Sentence: I have had a wonderful day.",
+    "output": "Positive",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nGiven a sentence, classify the sentiment in the sentence as 'Positive', 'Negative' or 'Neutral'.\n\n### Input:\nSentence: I have had a wonderful day.\n\n### Response:\nPositive"
+  },
+  {
+    "instruction": "Suggest some strategies to prioritize task in a to-do list.",
+    "input": "",
+    "output": "When prioritizing tasks in a to-do list, some strategies could include: \n\n1. Assess the urgency and importance of each task.\n2. Set a timeline for each item on the list.\n3. Break complex tasks into smaller, more manageable chunks.\n4. Prioritize tasks based on their level of difficulty.\n5. Tackle important tasks first, then move on to less important tasks.\n6. Ask for help from family and friends if needed.\n7. Find the best time for tackling each task.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nSuggest some strategies to prioritize task in a to-do list.\n\n### Response:\nWhen prioritizing tasks in a to-do list, some strategies could include: \n\n1. Assess the urgency and importance of each task.\n2. Set a timeline for each item on the list.\n3. Break complex tasks into smaller, more manageable chunks.\n4. Prioritize tasks based on their level of difficulty.\n5. Tackle important tasks first, then move on to less important tasks.\n6. Ask for help from family and friends if needed.\n7. Find the best time for tackling each task."
+  },
+  {
+    "instruction": "Find the article ID given a URL.",
+    "input": "https://www.nytimes.com/2020/02/14/technology/macbook-microphone-apple.html",
+    "output": "Article ID: nyti-20200214-Technology-Macbook-Microphone-Apple",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nFind the article ID given a URL.\n\n### Input:\nhttps://www.nytimes.com/2020/02/14/technology/macbook-microphone-apple.html\n\n### Response:\nArticle ID: nyti-20200214-Technology-Macbook-Microphone-Apple"
+  },
+  {
+    "instruction": "Given a gene sequence, find the corresponding protein.",
+    "input": "ATGGAGCCTGACGTAG",
+    "output": "MGEPGRG",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nGiven a gene sequence, find the corresponding protein.\n\n### Input:\nATGGAGCCTGACGTAG\n\n### Response:\nMGEPGRG"
+  },
+  {
+    "instruction": "What are some ways to refactor this code?",
+    "input": "def checkData(data):\n    if data[0] == \"A\" and \n        data[1] == \"B\" and \n        data[2] == \"C\":\n        return True\n    else:\n        return False",
+    "output": "This code can be refactored in a few ways to improve readability and efficiency. One way would be to check to see if all elements in the data array are equal to the corresponding letters. This can be done using the all() method in Python, like so:\n\nreturn all(d == l for d, l in zip(data, [\"A\",\"B\",\"C\"]))\n\nAlso, a ternary operator could be used to simplify the code. The if/else statement could be rewritten as:\n\nreturn True if data[0] == \"A\" and data[1] == \"B\" and data[2] ==\"C\" else False",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nWhat are some ways to refactor this code?\n\n### Input:\ndef checkData(data):\n    if data[0] == \"A\" and \n        data[1] == \"B\" and \n        data[2] == \"C\":\n        return True\n    else:\n        return False\n\n### Response:\nThis code can be refactored in a few ways to improve readability and efficiency. One way would be to check to see if all elements in the data array are equal to the corresponding letters. This can be done using the all() method in Python, like so:\n\nreturn all(d == l for d, l in zip(data, [\"A\",\"B\",\"C\"]))\n\nAlso, a ternary operator could be used to simplify the code. The if/else statement could be rewritten as:\n\nreturn True if data[0] == \"A\" and data[1] == \"B\" and data[2] ==\"C\" else False"
+  },
+  {
+    "instruction": "What are some recent developments in the field of autonomous vehicles?",
+    "input": "",
+    "output": "1. Investing in tech startups working on self-driving vehicles and transportation systems.\n2. Recent research that is exploring the utilization of autonomous systems that are able to safely interact with both pedestrians and other vehicles.\n3. Developing software to help these vehicles detect and respond to changes in road conditions.\n4. Developing new safety features such as obstacle detection and lane changing technologies. \n5. Using high-resolution mapping technology such as LiDAR to help the vehicle navigate its environment. \n6. Harnessing technologies such artificial intelligence, machine learning, and natural language processing to enhance the intelligence of the self-driving vehicle.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nWhat are some recent developments in the field of autonomous vehicles?\n\n### Response:\n1. Investing in tech startups working on self-driving vehicles and transportation systems.\n2. Recent research that is exploring the utilization of autonomous systems that are able to safely interact with both pedestrians and other vehicles.\n3. Developing software to help these vehicles detect and respond to changes in road conditions.\n4. Developing new safety features such as obstacle detection and lane changing technologies. \n5. Using high-resolution mapping technology such as LiDAR to help the vehicle navigate its environment. \n6. Harnessing technologies such artificial intelligence, machine learning, and natural language processing to enhance the intelligence of the self-driving vehicle."
+  },
+  {
+    "instruction": "Given the following drawing, generate an appropriate caption.",
+    "input": "![alt text](https://image.shutterstock.com/image-vector/colored-sign-nature-protect-people-260nw-746876663.jpg)",
+    "output": "Only together can we protect our planet and ensure a better future for generations to come.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nGiven the following drawing, generate an appropriate caption.\n\n### Input:\n![alt text](https://image.shutterstock.com/image-vector/colored-sign-nature-protect-people-260nw-746876663.jpg)\n\n### Response:\nOnly together can we protect our planet and ensure a better future for generations to come."
+  },
+  {
+    "instruction": "Delete the 7th word in the following sentence:\n\n\"The quick brown fox jumps over the lazy dog.\"",
+    "input": "The quick brown fox jumps over the lazy dog.",
+    "output": "The quick brown fox over the lazy dog.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nDelete the 7th word in the following sentence:\n\n\"The quick brown fox jumps over the lazy dog.\"\n\n### Input:\nThe quick brown fox jumps over the lazy dog.\n\n### Response:\nThe quick brown fox over the lazy dog."
+  },
+  {
+    "instruction": "Reword this sentence to use an adverb instead.",
+    "input": "The dog ran quickly",
+    "output": "The dog ran swiftly.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nReword this sentence to use an adverb instead.\n\n### Input:\nThe dog ran quickly\n\n### Response:\nThe dog ran swiftly."
+  },
+  {
+    "instruction": "Classify between two different types of cats",
+    "input": "American shorthair and Maine coon",
+    "output": "A classifier, trained on data of American shorthair and Maine coon cats, which distinguishes between the two types.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nClassify between two different types of cats\n\n### Input:\nAmerican shorthair and Maine coon\n\n### Response:\nA classifier, trained on data of American shorthair and Maine coon cats, which distinguishes between the two types."
+  },
+  {
+    "instruction": "Come up with a slogan for a pet grooming business.",
+    "input": "",
+    "output": "The Perfect Pet's Perfect Groom: \n\"Where the Perfect Pet is Groomed to Perfection!\"",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nCome up with a slogan for a pet grooming business.\n\n### Response:\nThe Perfect Pet's Perfect Groom: \n\"Where the Perfect Pet is Groomed to Perfection!\""
+  },
+  {
+    "instruction": "Create an example sentence for the phrase 'baffle the audience'.",
+    "input": "",
+    "output": "The magician’s trick was so complicated that it completely baffled the audience.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nCreate an example sentence for the phrase 'baffle the audience'.\n\n### Response:\nThe magician’s trick was so complicated that it completely baffled the audience."
+  },
+  {
+    "instruction": "Determine the most relevant topic for this text input",
+    "input": "Organ donation is the process of surgically removing an organ or tissue from a living or deceased donor and transplanting it into a recipient.",
+    "output": "Organ donation.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nDetermine the most relevant topic for this text input\n\n### Input:\nOrgan donation is the process of surgically removing an organ or tissue from a living or deceased donor and transplanting it into a recipient.\n\n### Response:\nOrgan donation."
+  },
+  {
+    "instruction": "Think of a creative way to say \"I don't know\".",
+    "input": "",
+    "output": "My mind is a blank slate.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nThink of a creative way to say \"I don't know\".\n\n### Response:\nMy mind is a blank slate."
+  },
+  {
+    "instruction": "Find the area for the following triangle",
+    "input": "Side a = 10\nSide b = 12\nAngle (in degrees) = 90",
+    "output": "The area of the triangle is 60. The area can be calculated using the formula A = 1/2 x a x b x sin(angle). In this case, it is 1/2 x 10 x 12 x sin(90) = 60.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nFind the area for the following triangle\n\n### Input:\nSide a = 10\nSide b = 12\nAngle (in degrees) = 90\n\n### Response:\nThe area of the triangle is 60. The area can be calculated using the formula A = 1/2 x a x b x sin(angle). In this case, it is 1/2 x 10 x 12 x sin(90) = 60."
+  },
+  {
+    "instruction": "Output a program that takes a two-digit input and determines if it is a prime number.",
+    "input": "",
+    "output": "def is_prime(n): \n    if (n <= 1): \n        return False\n    \n    if (n <= 3): \n        return True\n    \n  \n    if (n % 2 == 0 or n % 3 == 0): \n        return False\n  \n    for i in range(5,int(n**0.5) + 1, 6):  \n        if (n % i == 0 or n % (i + 2) == 0): \n            return False\n  \n    return True\n  \nnum = int(input(\"Enter a number: \")) \nif is_prime(num): \n    print(num, \"is a prime number\") \nelse: \n    print(num, \"is not a prime number\")",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nOutput a program that takes a two-digit input and determines if it is a prime number.\n\n### Response:\ndef is_prime(n): \n    if (n <= 1): \n        return False\n    \n    if (n <= 3): \n        return True\n    \n  \n    if (n % 2 == 0 or n % 3 == 0): \n        return False\n  \n    for i in range(5,int(n**0.5) + 1, 6):  \n        if (n % i == 0 or n % (i + 2) == 0): \n            return False\n  \n    return True\n  \nnum = int(input(\"Enter a number: \")) \nif is_prime(num): \n    print(num, \"is a prime number\") \nelse: \n    print(num, \"is not a prime number\")"
+  },
+  {
+    "instruction": "Alphabetize the following countries",
+    "input": "South Africa, Nigeria, Zimbabwe",
+    "output": "Nigeria, South Africa, Zimbabwe",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nAlphabetize the following countries\n\n### Input:\nSouth Africa, Nigeria, Zimbabwe\n\n### Response:\nNigeria, South Africa, Zimbabwe"
+  },
+  {
+    "instruction": "Group the following words based on their thematic categories.",
+    "input": "Pizza, telephone, pasta, internet",
+    "output": "Group 1: Pizza, pasta\nGroup 2: Telephone, internet",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nGroup the following words based on their thematic categories.\n\n### Input:\nPizza, telephone, pasta, internet\n\n### Response:\nGroup 1: Pizza, pasta\nGroup 2: Telephone, internet"
+  },
+  {
+    "instruction": "Analyze the following quote to provide insight into the speaker's feelings.",
+    "input": "\"Nothing ever stays the same.\"",
+    "output": "This quote is likely spoken with an air of regret as the speaker reflects on the realities of life. The sentiment suggests that change is inevitable, and that people must constantly adapt to their circumstances. On an emotional level, the speaker may be feeling sadness or frustration that they cannot keep the status quo or rely on expectations of stability.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nAnalyze the following quote to provide insight into the speaker's feelings.\n\n### Input:\n\"Nothing ever stays the same.\"\n\n### Response:\nThis quote is likely spoken with an air of regret as the speaker reflects on the realities of life. The sentiment suggests that change is inevitable, and that people must constantly adapt to their circumstances. On an emotional level, the speaker may be feeling sadness or frustration that they cannot keep the status quo or rely on expectations of stability."
+  },
+  {
+    "instruction": "Analyze the logo of this company.",
+    "input": "Google",
+    "output": "Google's logo is a customizable, friendly, and multicolored design that seeks to make users feel welcomed and inspired to explore the company's offerings. The round shape of the logo is a representation of the world and conveys a strong sense of inclusivity, while the bright colors add an optimistic tone to the image. Additionally, the primary color of the logo, green, helps to differentiate the brand from its competitors.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nAnalyze the logo of this company.\n\n### Input:\nGoogle\n\n### Response:\nGoogle's logo is a customizable, friendly, and multicolored design that seeks to make users feel welcomed and inspired to explore the company's offerings. The round shape of the logo is a representation of the world and conveys a strong sense of inclusivity, while the bright colors add an optimistic tone to the image. Additionally, the primary color of the logo, green, helps to differentiate the brand from its competitors."
+  },
+  {
+    "instruction": "Create a list of configuration parameters and their default values for this specific model.",
+    "input": "Model: Deep Learning Model",
+    "output": "Configuration Parameters:\n- Optimizer: Adam\n- Loss Function: Binary Cross Entropy\n- Learning rate: 0.001\n- Batch size: 32\n- Maximum Epochs: 100\n- Maximum Iterations: 1000\n- Validation Split: 0.2\n- Evaluation Metric: F1-score\n- Normalization Type: Batch Normalization\n\nDefault Values:\n- Optimizer: Adam\n- Loss Function: Binary Cross Entropy\n- Learning rate: 0.001\n- Batch size: 32\n- Maximum Epochs: 100\n- Maximum Iterations: 1000\n- Validation Split: 0.2\n- Evaluation Metric: F1-score\n- Normalization Type: Batch Normalization",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nCreate a list of configuration parameters and their default values for this specific model.\n\n### Input:\nModel: Deep Learning Model\n\n### Response:\nConfiguration Parameters:\n- Optimizer: Adam\n- Loss Function: Binary Cross Entropy\n- Learning rate: 0.001\n- Batch size: 32\n- Maximum Epochs: 100\n- Maximum Iterations: 1000\n- Validation Split: 0.2\n- Evaluation Metric: F1-score\n- Normalization Type: Batch Normalization\n\nDefault Values:\n- Optimizer: Adam\n- Loss Function: Binary Cross Entropy\n- Learning rate: 0.001\n- Batch size: 32\n- Maximum Epochs: 100\n- Maximum Iterations: 1000\n- Validation Split: 0.2\n- Evaluation Metric: F1-score\n- Normalization Type: Batch Normalization"
+  },
+  {
+    "instruction": "Create a list of 4 adjectives that describe a flower",
+    "input": "",
+    "output": "Delicate, colorful, fragrant, beautiful.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nCreate a list of 4 adjectives that describe a flower\n\n### Response:\nDelicate, colorful, fragrant, beautiful."
+  },
+  {
+    "instruction": "Create a tag line for a restaurant's advertisement.",
+    "input": "<No input>",
+    "output": "Come and taste the flavor of true deliciousness!",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nCreate a tag line for a restaurant's advertisement.\n\n### Input:\n<No input>\n\n### Response:\nCome and taste the flavor of true deliciousness!"
+  },
+  {
+    "instruction": "Generate a list of 5 interesting facts about the Great Wall of China.",
+    "input": "",
+    "output": "1. The Great Wall of China is over 13,000 miles long.\n2. The wall was first built in the 7th century BC by the Qin dynasty.\n3. The wall was built by over 1 million workers over the course of 2,000 years.\n4. Sections of the wall have been made from anything from wood to stone to brick.\n5. The wall is visible from space with the naked eye.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nGenerate a list of 5 interesting facts about the Great Wall of China.\n\n### Response:\n1. The Great Wall of China is over 13,000 miles long.\n2. The wall was first built in the 7th century BC by the Qin dynasty.\n3. The wall was built by over 1 million workers over the course of 2,000 years.\n4. Sections of the wall have been made from anything from wood to stone to brick.\n5. The wall is visible from space with the naked eye."
+  },
+  {
+    "instruction": "How would you solve this equation: 4x + 5y = 28",
+    "input": "",
+    "output": "The solution to this equation is x = 6 and y = 2.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nHow would you solve this equation: 4x + 5y = 28\n\n### Response:\nThe solution to this equation is x = 6 and y = 2."
+  },
+  {
+    "instruction": "Compare the ingredients in two recipes and list out the differences.",
+    "input": "Recipe A: 2 cups of flour, 1/2 cup of  butter, 1 teaspoon of baking powder \nRecipe B: 1 cup of flour, 1 teaspoon of baking soda",
+    "output": "Recipe A contains 2 cups of flour, 1/2 cup of butter and 1 teaspoon of baking powder while Recipe B contains 1 cup of flour and 1 teaspoon of baking soda. Recipe A has an extra 1/2 cup of butter compared to Recipe B.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nCompare the ingredients in two recipes and list out the differences.\n\n### Input:\nRecipe A: 2 cups of flour, 1/2 cup of  butter, 1 teaspoon of baking powder \nRecipe B: 1 cup of flour, 1 teaspoon of baking soda\n\n### Response:\nRecipe A contains 2 cups of flour, 1/2 cup of butter and 1 teaspoon of baking powder while Recipe B contains 1 cup of flour and 1 teaspoon of baking soda. Recipe A has an extra 1/2 cup of butter compared to Recipe B."
+  },
+  {
+    "instruction": "Create a plan for upholding a successful daily routine.",
+    "input": "",
+    "output": "Creating and maintaining a successful daily routine can help ensure a more productive and successful day. Here is a plan for forming and adhering to a successful daily routine:\n\n- Set manageable goals – Setting goals and tasks that are achievable will help keep you on track and prevent overwhelming yourself with too much at once.\n- Get ample sleep – Getting enough sleep is essential for health and productivity. Setting a regular sleep schedule and sticking to it can help achieve that.\n- Make time for yourself – Having breaks throughout the day to do something you enjoy or relax can help maintain focus and motivation.\n- Stay organized – Creating a to-do list or schedule can help you keep track of tasks and prioritize them.\n- Eat well – Eating healthy, nutritious meals can help provide energy for the day.\n- Exercise – Incorporating exercise into your routine can help relieve stress and clear your mind.\n- Spend time with loved ones – Taking time to appreciate those around you and setting aside a little time for yourself throughout the day can keep you balanced.\n\nCreating and adhering to a successful daily routine takes consistency, discipline, and dedication. However, forming and sticking to one can help maximize efficiency and productivity.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nCreate a plan for upholding a successful daily routine.\n\n### Response:\nCreating and maintaining a successful daily routine can help ensure a more productive and successful day. Here is a plan for forming and adhering to a successful daily routine:\n\n- Set manageable goals – Setting goals and tasks that are achievable will help keep you on track and prevent overwhelming yourself with too much at once.\n- Get ample sleep – Getting enough sleep is essential for health and productivity. Setting a regular sleep schedule and sticking to it can help achieve that.\n- Make time for yourself – Having breaks throughout the day to do something you enjoy or relax can help maintain focus and motivation.\n- Stay organized – Creating a to-do list or schedule can help you keep track of tasks and prioritize them.\n- Eat well – Eating healthy, nutritious meals can help provide energy for the day.\n- Exercise – Incorporating exercise into your routine can help relieve stress and clear your mind.\n- Spend time with loved ones – Taking time to appreciate those around you and setting aside a little time for yourself throughout the day can keep you balanced.\n\nCreating and adhering to a successful daily routine takes consistency, discipline, and dedication. However, forming and sticking to one can help maximize efficiency and productivity."
+  },
+  {
+    "instruction": "Explain how light travels.",
+    "input": "",
+    "output": "Light travels in waves, and is composed of both electrical and magnetic fields. These fields vibrate in a periodic manner, and the speed of light is determined by the frequency of these oscillations. Light travels in straight lines, and when it is reflected, refracted, absorbed, or diffracted, its direction is changed. When light passes through transparent substances, such as glass or water, it might be bent, causing its speed and direction to change.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nExplain how light travels.\n\n### Response:\nLight travels in waves, and is composed of both electrical and magnetic fields. These fields vibrate in a periodic manner, and the speed of light is determined by the frequency of these oscillations. Light travels in straight lines, and when it is reflected, refracted, absorbed, or diffracted, its direction is changed. When light passes through transparent substances, such as glass or water, it might be bent, causing its speed and direction to change."
+  },
+  {
+    "instruction": "Add an unbiased reference to the given sentence.",
+    "input": "Neptune is the eighth planet from the Sun.",
+    "output": "Neptune is the eighth planet from the Sun, according to the IAU's modern definition of a planet.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nAdd an unbiased reference to the given sentence.\n\n### Input:\nNeptune is the eighth planet from the Sun.\n\n### Response:\nNeptune is the eighth planet from the Sun, according to the IAU's modern definition of a planet."
+  },
+  {
+    "instruction": "Describe how a plant converts the sun's energy into food.",
+    "input": "",
+    "output": "Plants are able to convert the sun's energy into food through a process called photosynthesis. Photosynthesis involves taking in light energy from the sun and combining it with water and carbon dioxide to produce glucose, which is then used by the plant to make energy-rich molecules. This process also produces oxygen, which is released into the atmosphere. Photosynthesis occurs in the chloroplasts of the plant cells and involves the conversion of solar energy into chemical energy.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nDescribe how a plant converts the sun's energy into food.\n\n### Response:\nPlants are able to convert the sun's energy into food through a process called photosynthesis. Photosynthesis involves taking in light energy from the sun and combining it with water and carbon dioxide to produce glucose, which is then used by the plant to make energy-rich molecules. This process also produces oxygen, which is released into the atmosphere. Photosynthesis occurs in the chloroplasts of the plant cells and involves the conversion of solar energy into chemical energy."
+  },
+  {
+    "instruction": "Give two examples of animals in the same taxonomic family.",
+    "input": "",
+    "output": "Polar bear and brown bear (Ursidae family) or elephant and rhinoceros (Proboscidea family).",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nGive two examples of animals in the same taxonomic family.\n\n### Response:\nPolar bear and brown bear (Ursidae family) or elephant and rhinoceros (Proboscidea family)."
+  },
+  {
+    "instruction": "Generate a word association for the word \"dog\"",
+    "input": "",
+    "output": "Cat",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nGenerate a word association for the word \"dog\"\n\n### Response:\nCat"
+  },
+  {
+    "instruction": "Describe a time when you had to work together within a group to get something done.",
+    "input": "",
+    "output": "I once had to work with a group of people to move an entire office of furniture. It was a difficult task since we had to coordinate our schedules and figure out how to move everything safely and quickly. We had to divide up the tasks, with some of us helping to organize the furniture and others helping to lift and move it. We worked together to make sure the job got done and in the end we completed the task in a timely manner. It was a great learning experience as I got to see how working together as a team can help you accomplish a task more efficiently.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nDescribe a time when you had to work together within a group to get something done.\n\n### Response:\nI once had to work with a group of people to move an entire office of furniture. It was a difficult task since we had to coordinate our schedules and figure out how to move everything safely and quickly. We had to divide up the tasks, with some of us helping to organize the furniture and others helping to lift and move it. We worked together to make sure the job got done and in the end we completed the task in a timely manner. It was a great learning experience as I got to see how working together as a team can help you accomplish a task more efficiently."
+  },
+  {
+    "instruction": "Generate a conversation between two friends who met after a long time.",
+    "input": "",
+    "output": "Friend 1: Hi, I haven't seen you in forever! How have you been?\nFriend 2: I've been great! It's been so long since we last talked - I'm so happy to see you. How about yourself? \nFriend 1: I'm doing great too. It's been a long time since we've hung out, do you want to grab lunch sometime soon?\nFriend 2: Absolutely! It'll be great catching up with you.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nGenerate a conversation between two friends who met after a long time.\n\n### Response:\nFriend 1: Hi, I haven't seen you in forever! How have you been?\nFriend 2: I've been great! It's been so long since we last talked - I'm so happy to see you. How about yourself? \nFriend 1: I'm doing great too. It's been a long time since we've hung out, do you want to grab lunch sometime soon?\nFriend 2: Absolutely! It'll be great catching up with you."
+  },
+  {
+    "instruction": "Describe the key ingredients of a successful product launch.",
+    "input": "",
+    "output": "The most important ingredient of a successful product launch is a solid and well-thought-out plan. The plan should identify the intended market, consider long-term goals, establish a marketing strategy, specify target demographics, and consider implementation strategies. The plan should also consider the product's competitive landscape and budgeting for advertising and promotional efforts. Additionally, pre-launch strategies should be put into place to build excitement for the product as well as post-launch strategies to ensure ongoing success. Finally, a well-executed launch should include a thorough evaluation of the results and feedback from customers.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nDescribe the key ingredients of a successful product launch.\n\n### Response:\nThe most important ingredient of a successful product launch is a solid and well-thought-out plan. The plan should identify the intended market, consider long-term goals, establish a marketing strategy, specify target demographics, and consider implementation strategies. The plan should also consider the product's competitive landscape and budgeting for advertising and promotional efforts. Additionally, pre-launch strategies should be put into place to build excitement for the product as well as post-launch strategies to ensure ongoing success. Finally, a well-executed launch should include a thorough evaluation of the results and feedback from customers."
+  },
+  {
+    "instruction": "Given the following paragraph, generate a short headline.",
+    "input": "The international community celebrated the end of the trade war between the two countries, with the terms of the agreement set to be finalized shortly.",
+    "output": "Trade War Ends between Nations",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nGiven the following paragraph, generate a short headline.\n\n### Input:\nThe international community celebrated the end of the trade war between the two countries, with the terms of the agreement set to be finalized shortly.\n\n### Response:\nTrade War Ends between Nations"
+  },
+  {
+    "instruction": "Reverse these two words.",
+    "input": "Happy Sad",
+    "output": "Sad Happy",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nReverse these two words.\n\n### Input:\nHappy Sad\n\n### Response:\nSad Happy"
+  },
+  {
+    "instruction": "Select an appropriate response from the given options.",
+    "input": "John has finished his practice.\nA. Yes, he did.\nB. Nope.\nC. Not yet.\nD. I don't know.",
+    "output": "A. Yes, he did.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nSelect an appropriate response from the given options.\n\n### Input:\nJohn has finished his practice.\nA. Yes, he did.\nB. Nope.\nC. Not yet.\nD. I don't know.\n\n### Response:\nA. Yes, he did."
+  },
+  {
+    "instruction": "Convert from polar coordinates to rectangular coordinates.",
+    "input": "(1, π/4)",
+    "output": "(0.707, 0.707)",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nConvert from polar coordinates to rectangular coordinates.\n\n### Input:\n(1, π/4)\n\n### Response:\n(0.707, 0.707)"
+  },
+  {
+    "instruction": "Rearrange list items to be in alphabetical order.",
+    "input": "Ocelot, Tasmanian Devil, Galapagos Tortoise",
+    "output": "Galapagos Tortoise, Ocelot, Tasmanian Devil",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nRearrange list items to be in alphabetical order.\n\n### Input:\nOcelot, Tasmanian Devil, Galapagos Tortoise\n\n### Response:\nGalapagos Tortoise, Ocelot, Tasmanian Devil"
+  },
+  {
+    "instruction": "Develop an algorithm for organizing a family reunion.",
+    "input": "",
+    "output": "Algorithm for Organizing a Family Reunion:\n1. Identify the family members who will be attending.\n2. Choose a date and location that works best for the majority of attendees.\n3. Make a list of activities and plan ahead to ensure they are logistically possible.\n4. Secure any specific materials or components needed for activities and create a shopping list.\n5. Invite the family members to the reunion and provide necessary details.\n6. Make hotel and transportation arrangements as needed.\n7. Have an open forum during the reunion to discuss and capture any feedback.\n8. Take photos and videos during the reunion as keepsakes.\n9. End the reunion with a plan for the next reunion.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nDevelop an algorithm for organizing a family reunion.\n\n### Response:\nAlgorithm for Organizing a Family Reunion:\n1. Identify the family members who will be attending.\n2. Choose a date and location that works best for the majority of attendees.\n3. Make a list of activities and plan ahead to ensure they are logistically possible.\n4. Secure any specific materials or components needed for activities and create a shopping list.\n5. Invite the family members to the reunion and provide necessary details.\n6. Make hotel and transportation arrangements as needed.\n7. Have an open forum during the reunion to discuss and capture any feedback.\n8. Take photos and videos during the reunion as keepsakes.\n9. End the reunion with a plan for the next reunion."
+  },
+  {
+    "instruction": "How can one determine the similarity between two biological sequences such as DNA strings?",
+    "input": "",
+    "output": "One way to determine the similarity between two biological sequences is to use a dynamic programming algorithm such as Smith-Waterman or Needleman-Wunsch. These algorithms compare the sequences of biological data and calculate the similarity score based on the number of similar characters or elements between the sequences.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nHow can one determine the similarity between two biological sequences such as DNA strings?\n\n### Response:\nOne way to determine the similarity between two biological sequences is to use a dynamic programming algorithm such as Smith-Waterman or Needleman-Wunsch. These algorithms compare the sequences of biological data and calculate the similarity score based on the number of similar characters or elements between the sequences."
+  },
+  {
+    "instruction": "Describe the theory of natural selection in one sentence.",
+    "input": "",
+    "output": "Natural selection is the process of species adapting to their environment over time, resulting in beneficial traits becoming more common in the population.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nDescribe the theory of natural selection in one sentence.\n\n### Response:\nNatural selection is the process of species adapting to their environment over time, resulting in beneficial traits becoming more common in the population."
+  },
+  {
+    "instruction": "Explain the conflict between the U.S. and North Korea in 3 sentences.",
+    "input": "",
+    "output": "The conflict between the United States and North Korea is rooted in the Korean War, which began in 1950. The U.S. seeks to de-nuclearize the Korean Peninsula, while North Korea seeks to maintain its nuclear program. This clash in objectives has led to a series of diplomatic standoffs and economic sanction exchanges that have created rising tensions between the two countries.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nExplain the conflict between the U.S. and North Korea in 3 sentences.\n\n### Response:\nThe conflict between the United States and North Korea is rooted in the Korean War, which began in 1950. The U.S. seeks to de-nuclearize the Korean Peninsula, while North Korea seeks to maintain its nuclear program. This clash in objectives has led to a series of diplomatic standoffs and economic sanction exchanges that have created rising tensions between the two countries."
+  },
+  {
+    "instruction": "Detect the bias in the sentence.",
+    "input": "Women should focus more on taking care of their families rather than having a career.",
+    "output": "This sentence suggests that women are primarily responsible for taking care of their families and it implies that a career is a secondary priority, which is a gender-based bias.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nDetect the bias in the sentence.\n\n### Input:\nWomen should focus more on taking care of their families rather than having a career.\n\n### Response:\nThis sentence suggests that women are primarily responsible for taking care of their families and it implies that a career is a secondary priority, which is a gender-based bias."
+  },
+  {
+    "instruction": "Create a program to find the highest value in an array",
+    "input": "",
+    "output": "def find_highest_value(arr):\n    highest_value = arr[0]\n    \n    for i in range(1, len(arr)):\n        if arr[i] > highest_value:\n            highest_value = arr[i]\n            \n    return highest_value",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nCreate a program to find the highest value in an array\n\n### Response:\ndef find_highest_value(arr):\n    highest_value = arr[0]\n    \n    for i in range(1, len(arr)):\n        if arr[i] > highest_value:\n            highest_value = arr[i]\n            \n    return highest_value"
+  },
+  {
+    "instruction": "Name three countries in the South American continent that have Spanish as their official language.",
+    "input": "",
+    "output": "The three countries in the South American continent that have Spanish as their official language are Colombia, Ecuador, and Peru.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nName three countries in the South American continent that have Spanish as their official language.\n\n### Response:\nThe three countries in the South American continent that have Spanish as their official language are Colombia, Ecuador, and Peru."
+  },
+  {
+    "instruction": "Suggest a way to organize data for the following case: Customer records for the past year.",
+    "input": "",
+    "output": "Customer records for the past year should be organized by month and year to make it easier to analyze the data over time. The records should also be accompanied by additional information such as customer name, order details, payment type, and location.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nSuggest a way to organize data for the following case: Customer records for the past year.\n\n### Response:\nCustomer records for the past year should be organized by month and year to make it easier to analyze the data over time. The records should also be accompanied by additional information such as customer name, order details, payment type, and location."
+  },
+  {
+    "instruction": "Name a famous US President",
+    "input": "",
+    "output": "John F. Kennedy",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nName a famous US President\n\n### Response:\nJohn F. Kennedy"
+  },
+  {
+    "instruction": "Create an email to send to your professor to inquire about an extra credit assignment.",
+    "input": "Name: John Smith\nSubject: Extra Credit Assignment",
+    "output": "Dear Professor Smith,\n\nMy name is John and I am currently enrolled in your course. I was wondering if there would be any extra credit assignments available for the semester. I am eager to make up for any missed assignments, if possible. I would very much appreciate if you could provide us with an opportunity to earn extra credit.\n\nThank you for your time.\n\nSincerely,\n\nJohn Smith",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nCreate an email to send to your professor to inquire about an extra credit assignment.\n\n### Input:\nName: John Smith\nSubject: Extra Credit Assignment\n\n### Response:\nDear Professor Smith,\n\nMy name is John and I am currently enrolled in your course. I was wondering if there would be any extra credit assignments available for the semester. I am eager to make up for any missed assignments, if possible. I would very much appreciate if you could provide us with an opportunity to earn extra credit.\n\nThank you for your time.\n\nSincerely,\n\nJohn Smith"
+  },
+  {
+    "instruction": "Replace the asterisks with the correct information",
+    "input": "When Christopher Columbus _______ in 1492, he was on a voyage to _______",
+    "output": "When Christopher Columbus set sail in 1492, he was on a voyage to the New World.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nReplace the asterisks with the correct information\n\n### Input:\nWhen Christopher Columbus _______ in 1492, he was on a voyage to _______\n\n### Response:\nWhen Christopher Columbus set sail in 1492, he was on a voyage to the New World."
+  },
+  {
+    "instruction": "Create a list of questions to ask a client who is looking to build a website.",
+    "input": "",
+    "output": "- What is the purpose of the website, i.e sales, marketing, media? \n- What features do you need on your website, e.g. e-commerce capabilities, searchable database? \n- What design elements do you have in mind, e.g. colour scheme, layout? \n- How often do you expect the website to be updated? \n- Are there any existing websites that you want to replicate elements from? \n- What is the budget for this project? \n- What timeframe do you need the website completed by? \n- What qualities are you looking for in a web design agency? \n- Who will be responsible for providing copy and images? \n- Do you require any additional services, e.g. SEO or content marketing? \n- What kind of technical support do you need?",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nCreate a list of questions to ask a client who is looking to build a website.\n\n### Response:\n- What is the purpose of the website, i.e sales, marketing, media? \n- What features do you need on your website, e.g. e-commerce capabilities, searchable database? \n- What design elements do you have in mind, e.g. colour scheme, layout? \n- How often do you expect the website to be updated? \n- Are there any existing websites that you want to replicate elements from? \n- What is the budget for this project? \n- What timeframe do you need the website completed by? \n- What qualities are you looking for in a web design agency? \n- Who will be responsible for providing copy and images? \n- Do you require any additional services, e.g. SEO or content marketing? \n- What kind of technical support do you need?"
+  },
+  {
+    "instruction": "Classify the paragraph into one of the three categories: 1) fiction; 2) non-fiction; 3) opinion.",
+    "input": "The writings of Friedrich Nietzsche have often been accused of promoting nihilism, the belief that life is without meaning or purpose. Though nihilism is certainly present in Nietzsche's work, it does not represent a central feature of his philosophy. Instead, Nietzsche believes that life is meaningful and that we must create our own meaning and purpose. He argues that since there is no higher power or external source of meaning, we must find or create meaning for ourselves.",
+    "output": "3",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nClassify the paragraph into one of the three categories: 1) fiction; 2) non-fiction; 3) opinion.\n\n### Input:\nThe writings of Friedrich Nietzsche have often been accused of promoting nihilism, the belief that life is without meaning or purpose. Though nihilism is certainly present in Nietzsche's work, it does not represent a central feature of his philosophy. Instead, Nietzsche believes that life is meaningful and that we must create our own meaning and purpose. He argues that since there is no higher power or external source of meaning, we must find or create meaning for ourselves.\n\n### Response:\n3"
+  },
+  {
+    "instruction": "What is the president of the United States' current job title?",
+    "input": "",
+    "output": "The current job title of the president of the United States is President of the United States of America.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nWhat is the president of the United States' current job title?\n\n### Response:\nThe current job title of the president of the United States is President of the United States of America."
+  },
+  {
+    "instruction": "Identify five safety tips for working with chemicals in a lab.",
+    "input": "",
+    "output": "1. Always wear the appropriate protective gear when working with chemicals, such as gloves, eye protection, and a lab coat. \n2. Read and understand the labels, warnings, and instructions on the containers of the chemicals before using them. \n3. Make sure to keep all chemicals in a secure, labeled location away from children and pets. \n4. Make sure to observe the required procedures when disposing of chemical waste. \n5. Make sure to keep all work areas clean and properly sterilized.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nIdentify five safety tips for working with chemicals in a lab.\n\n### Response:\n1. Always wear the appropriate protective gear when working with chemicals, such as gloves, eye protection, and a lab coat. \n2. Read and understand the labels, warnings, and instructions on the containers of the chemicals before using them. \n3. Make sure to keep all chemicals in a secure, labeled location away from children and pets. \n4. Make sure to observe the required procedures when disposing of chemical waste. \n5. Make sure to keep all work areas clean and properly sterilized."
+  },
+  {
+    "instruction": "Build a random forest regression model to predict the house prices based on the the given data.",
+    "input": "Data (nume, size, Balcony, Bedroom, Distance_Train, Cost, Outlay): \n3602, 3, 1,3,17Km, 207000,6380 \n2375, 2, 1,2,27Km, 152000,3900 \n1360, 2, 1,2,21Km, 55000,4180 \n1800, 4, 2,3,30Km, 115000,5350",
+    "output": "No output expected. The model should be built as a program and not be outputted as text.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nBuild a random forest regression model to predict the house prices based on the the given data.\n\n### Input:\nData (nume, size, Balcony, Bedroom, Distance_Train, Cost, Outlay): \n3602, 3, 1,3,17Km, 207000,6380 \n2375, 2, 1,2,27Km, 152000,3900 \n1360, 2, 1,2,21Km, 55000,4180 \n1800, 4, 2,3,30Km, 115000,5350\n\n### Response:\nNo output expected. The model should be built as a program and not be outputted as text."
+  },
+  {
+    "instruction": "Suggest one other way to reduce global warming.",
+    "input": "",
+    "output": "One way to reduce global warming is to increase the use of renewable energy sources such as solar, wind, and hydropower.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nSuggest one other way to reduce global warming.\n\n### Response:\nOne way to reduce global warming is to increase the use of renewable energy sources such as solar, wind, and hydropower."
+  },
+  {
+    "instruction": "Develop a content strategy to engage with target audience",
+    "input": "",
+    "output": "A content strategy to engage with the target audience should include the following steps:\n1. Research and identify the target audience.\n2. Develop content that is relevant to the target audience.\n3. Analyze the data collected from the target audience in order to adjust the content accordingly.\n4. Explore different formats and platforms to deliver the content to the target audience.\n5. Measure the results and adjust the strategy accordingly.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nDevelop a content strategy to engage with target audience\n\n### Response:\nA content strategy to engage with the target audience should include the following steps:\n1. Research and identify the target audience.\n2. Develop content that is relevant to the target audience.\n3. Analyze the data collected from the target audience in order to adjust the content accordingly.\n4. Explore different formats and platforms to deliver the content to the target audience.\n5. Measure the results and adjust the strategy accordingly."
+  },
+  {
+    "instruction": "Find the area of the triangle with sides 3, 4, and 5.",
+    "input": "",
+    "output": "The area of the triangle is 6 square units.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nFind the area of the triangle with sides 3, 4, and 5.\n\n### Response:\nThe area of the triangle is 6 square units."
+  },
+  {
+    "instruction": "Given a list of items, suggest a way to upcycle them.",
+    "input": "Newspapers, bottles, cans",
+    "output": "Newspapers can be upcycled into wrapping paper, bookmarks, and journals. Bottles can be upcycled into vases, planters, and windchimes. Cans can be upcycled into candle holders, wall art, and storage containers.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nGiven a list of items, suggest a way to upcycle them.\n\n### Input:\nNewspapers, bottles, cans\n\n### Response:\nNewspapers can be upcycled into wrapping paper, bookmarks, and journals. Bottles can be upcycled into vases, planters, and windchimes. Cans can be upcycled into candle holders, wall art, and storage containers."
+  },
+  {
+    "instruction": "Give two pros and two cons of nuclear power.",
+    "input": "",
+    "output": "Pros: \n1. Nuclear power is a reliable and affordable source of energy.\n2. It has a low carbon footprint and does not contribute to air pollution.\n\nCons:\n1. Nuclear waste is highly radioactive and needs to be stored safely for thousands of years.\n2. Accidents at nuclear plants can have catastrophic consequences for people and the environment.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nGive two pros and two cons of nuclear power.\n\n### Response:\nPros: \n1. Nuclear power is a reliable and affordable source of energy.\n2. It has a low carbon footprint and does not contribute to air pollution.\n\nCons:\n1. Nuclear waste is highly radioactive and needs to be stored safely for thousands of years.\n2. Accidents at nuclear plants can have catastrophic consequences for people and the environment."
+  },
+  {
+    "instruction": "What is the greatest threat to marine life?",
+    "input": "",
+    "output": "The greatest threat to marine life is overfishing and pollution caused by human activities such as oil spills, runoff from agricultural and industrial operations, and plastic debris in the ocean.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nWhat is the greatest threat to marine life?\n\n### Response:\nThe greatest threat to marine life is overfishing and pollution caused by human activities such as oil spills, runoff from agricultural and industrial operations, and plastic debris in the ocean."
+  },
+  {
+    "instruction": "Create a list of possible vegetables for a stir-fry.",
+    "input": "",
+    "output": "Possible vegetables for a stir-fry includes: peppers, carrots, onions, broccoli, mushrooms, cauliflower, snow peas, and bok choy.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nCreate a list of possible vegetables for a stir-fry.\n\n### Response:\nPossible vegetables for a stir-fry includes: peppers, carrots, onions, broccoli, mushrooms, cauliflower, snow peas, and bok choy."
+  },
+  {
+    "instruction": "Given two headline, write a sentence that combines them together.",
+    "input": "1. 22-Year-Old Wins a Nobel Prize\n2. Record Number of Female Candidates",
+    "output": "The record number of female candidates included a 22-year-old Nobel Prize winner.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nGiven two headline, write a sentence that combines them together.\n\n### Input:\n1. 22-Year-Old Wins a Nobel Prize\n2. Record Number of Female Candidates\n\n### Response:\nThe record number of female candidates included a 22-year-old Nobel Prize winner."
+  },
+  {
+    "instruction": "Suggest a theory to explain why the Antarctic ice is melting.",
+    "input": "",
+    "output": "One theory to explain why the Antarctic ice is melting is due to increasing global temperatures, caused by human-caused climate change. This has lead to a gradual increase in temperatures in the Antarctic region, causing the Antarctic ice to melt and contributing to sea levels rising. Other contributing factors can include ice shelf disintegration, ocean warming, changes in precipitation and wind patterns, and more.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nSuggest a theory to explain why the Antarctic ice is melting.\n\n### Response:\nOne theory to explain why the Antarctic ice is melting is due to increasing global temperatures, caused by human-caused climate change. This has lead to a gradual increase in temperatures in the Antarctic region, causing the Antarctic ice to melt and contributing to sea levels rising. Other contributing factors can include ice shelf disintegration, ocean warming, changes in precipitation and wind patterns, and more."
+  },
+  {
+    "instruction": "What is the original title of the 1977 movie Star Wars?",
+    "input": "",
+    "output": "Star Wars: Episode IV - A New Hope.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nWhat is the original title of the 1977 movie Star Wars?\n\n### Response:\nStar Wars: Episode IV - A New Hope."
+  },
+  {
+    "instruction": "What is the title of the fourth Harry Potter movie?",
+    "input": "",
+    "output": "Harry Potter and the Goblet of Fire.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nWhat is the title of the fourth Harry Potter movie?\n\n### Response:\nHarry Potter and the Goblet of Fire."
+  },
+  {
+    "instruction": "Find the length of the hypotenuse given two sides",
+    "input": "side_length1 = 5, side_length2 = 6",
+    "output": "The length of the hypotenuse is 7.81.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nFind the length of the hypotenuse given two sides\n\n### Input:\nside_length1 = 5, side_length2 = 6\n\n### Response:\nThe length of the hypotenuse is 7.81."
+  },
+  {
+    "instruction": "Suggest a way to improve the following customer service experience.",
+    "input": "The customer called in to ask a question about a product they recently purchased. The customer service person had limited product knowledge and was unable to properly answer the customer’s question.",
+    "output": "A customer service representative with limited product knowledge should not be responsible for answering customer questions about their purchased products. The company can provide further training for customer service representatives, or have product specialists who have more detailed knowledge about their products to be available to answer customer queries. Alternatively, the company can also develop self-service options, such as providing FAQs on their website and customer portals, so customers can look for answers to their questions without needing to contact customer service.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nSuggest a way to improve the following customer service experience.\n\n### Input:\nThe customer called in to ask a question about a product they recently purchased. The customer service person had limited product knowledge and was unable to properly answer the customer’s question.\n\n### Response:\nA customer service representative with limited product knowledge should not be responsible for answering customer questions about their purchased products. The company can provide further training for customer service representatives, or have product specialists who have more detailed knowledge about their products to be available to answer customer queries. Alternatively, the company can also develop self-service options, such as providing FAQs on their website and customer portals, so customers can look for answers to their questions without needing to contact customer service."
+  },
+  {
+    "instruction": "Pick one random activity that a person can do when they are feeling overwhelmed.",
+    "input": "",
+    "output": "One random activity that a person can do when they are feeling overwhelmed is to take a short walk and be mindful of their breath.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nPick one random activity that a person can do when they are feeling overwhelmed.\n\n### Response:\nOne random activity that a person can do when they are feeling overwhelmed is to take a short walk and be mindful of their breath."
+  },
+  {
+    "instruction": "Design a website page layout.",
+    "input": "",
+    "output": "<div class=\"container\">\n  <header>\n    Header Content\n  </header>\n  <div class=\"main-content\">\n    Main Content\n  </div>\n  <aside>\n    Aside Content\n  </aside>\n  <footer>\n    Footer Content\n  </footer>\n</div>",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nDesign a website page layout.\n\n### Response:\n<div class=\"container\">\n  <header>\n    Header Content\n  </header>\n  <div class=\"main-content\">\n    Main Content\n  </div>\n  <aside>\n    Aside Content\n  </aside>\n  <footer>\n    Footer Content\n  </footer>\n</div>"
+  },
+  {
+    "instruction": "You need to write a cover letter for a job application.",
+    "input": "",
+    "output": "Dear Hiring Manager, \n\nI am writing to apply for the open position at your company. I am confident that I am the right candidate for this job because of my strong qualifications and prior work experience. \n\nI have a degree in [X] and five years of experience in the [X] industry. My experience includes managing a team of [X] designers, completing complex [X] tasks, and delivering projects on time. I also have a deep understanding of [X] principles and have mastery in the use of various [X] platforms. I am proficient in [X] language, and have achieved success in developing sophisticated [X] applications. \n\nI am a strong communicator and a detail-oriented problem solver. I have a proven track record of successfully managing projects and teams, and I am confident I can contribute to your team's success.\n\nI am excited at the prospect of joining your team and contributing my experience and enthusiasm to the company. I look forward to hearing from you.\n\nSincerely, \n[Your Name]",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nYou need to write a cover letter for a job application.\n\n### Response:\nDear Hiring Manager, \n\nI am writing to apply for the open position at your company. I am confident that I am the right candidate for this job because of my strong qualifications and prior work experience. \n\nI have a degree in [X] and five years of experience in the [X] industry. My experience includes managing a team of [X] designers, completing complex [X] tasks, and delivering projects on time. I also have a deep understanding of [X] principles and have mastery in the use of various [X] platforms. I am proficient in [X] language, and have achieved success in developing sophisticated [X] applications. \n\nI am a strong communicator and a detail-oriented problem solver. I have a proven track record of successfully managing projects and teams, and I am confident I can contribute to your team's success.\n\nI am excited at the prospect of joining your team and contributing my experience and enthusiasm to the company. I look forward to hearing from you.\n\nSincerely, \n[Your Name]"
+  },
+  {
+    "instruction": "Create a trivia question about cars.",
+    "input": "",
+    "output": "What was the first car to travel over 200 miles per hour?\nAnswer: The Bugatti Veyron Super Sport.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nCreate a trivia question about cars.\n\n### Response:\nWhat was the first car to travel over 200 miles per hour?\nAnswer: The Bugatti Veyron Super Sport."
+  },
+  {
+    "instruction": "Name one of the original 13 colonies of the United States.",
+    "input": "",
+    "output": "One of the original 13 colonies was Virginia.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nName one of the original 13 colonies of the United States.\n\n### Response:\nOne of the original 13 colonies was Virginia."
+  },
+  {
+    "instruction": "Determine the author and year of this book",
+    "input": "The Great Gatsby",
+    "output": "The book The Great Gatsby was written by F. Scott Fitzgerald in 1925.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nDetermine the author and year of this book\n\n### Input:\nThe Great Gatsby\n\n### Response:\nThe book The Great Gatsby was written by F. Scott Fitzgerald in 1925."
+  },
+  {
+    "instruction": "Vaccinations are important for our health.",
+    "input": "",
+    "output": "Yes, vaccinations are an important part of maintaining good health. They help protect individuals from potentially serious illnesses and diseases by allowing the body to create antibodies that protect against illness. Vaccines can also help protect others in our communities as well by helping reduce the spread of illnesses or diseases.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nVaccinations are important for our health.\n\n### Response:\nYes, vaccinations are an important part of maintaining good health. They help protect individuals from potentially serious illnesses and diseases by allowing the body to create antibodies that protect against illness. Vaccines can also help protect others in our communities as well by helping reduce the spread of illnesses or diseases."
+  },
+  {
+    "instruction": "What is the most significant environmental challenge that humanity currently faces?",
+    "input": "",
+    "output": "The most significant environmental challenge that humanity currently faces is climate change. Climate change is caused primarily by the burning of fossil fuels, resulting in the emission of greenhouse gases such as carbon dioxide and methane. This climate change is causing global temperatures to rise, leading to extreme weather events such as floods and droughts, sea level rise, and ocean acidification. In addition, climate change is having drastic impacts on global ecosystems, leading to mass species extinction. In order to protect the planet it is important for governments and individuals to take action to reduce their carbon emissions.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nWhat is the most significant environmental challenge that humanity currently faces?\n\n### Response:\nThe most significant environmental challenge that humanity currently faces is climate change. Climate change is caused primarily by the burning of fossil fuels, resulting in the emission of greenhouse gases such as carbon dioxide and methane. This climate change is causing global temperatures to rise, leading to extreme weather events such as floods and droughts, sea level rise, and ocean acidification. In addition, climate change is having drastic impacts on global ecosystems, leading to mass species extinction. In order to protect the planet it is important for governments and individuals to take action to reduce their carbon emissions."
+  },
+  {
+    "instruction": "Come up with a creative and clever pun involving the phrase \"bacon and eggs\".",
+    "input": "",
+    "output": "\"Eat or run, the bacon and eggs decision!\"",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nCome up with a creative and clever pun involving the phrase \"bacon and eggs\".\n\n### Response:\n\"Eat or run, the bacon and eggs decision!\""
+  },
+  {
+    "instruction": "Automatically generate a random PIN code",
+    "input": "",
+    "output": "5321",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nAutomatically generate a random PIN code\n\n### Response:\n5321"
+  },
+  {
+    "instruction": "Given two coordinates (X1, Y1) and (X2, Y2), find the Euclidean distance between them.",
+    "input": "1, 2  8, 7",
+    "output": "The Euclidean distance between the two coordinates (1, 2) and (8, 7) is 7.615773105863909.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nGiven two coordinates (X1, Y1) and (X2, Y2), find the Euclidean distance between them.\n\n### Input:\n1, 2  8, 7\n\n### Response:\nThe Euclidean distance between the two coordinates (1, 2) and (8, 7) is 7.615773105863909."
+  },
+  {
+    "instruction": "What is the goal of software testing?",
+    "input": "",
+    "output": "The goal of software testing is to verify that a program or application is functioning as intended. It is used to identify and correct bugs, errors, and other issues that can potentially impact the program's performance. Additionally, testing helps to ensure that the application meets its stated requirements, as well as any additional business and user requirements. Testing can also be used to explore and discover new features to add to the application.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nWhat is the goal of software testing?\n\n### Response:\nThe goal of software testing is to verify that a program or application is functioning as intended. It is used to identify and correct bugs, errors, and other issues that can potentially impact the program's performance. Additionally, testing helps to ensure that the application meets its stated requirements, as well as any additional business and user requirements. Testing can also be used to explore and discover new features to add to the application."
+  },
+  {
+    "instruction": "Construct a sentence with the words \"seize\", \"opportunity\", and \"enjoyment\".",
+    "input": "",
+    "output": "We must seize every opportunity to enjoy life and make the most of it.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nConstruct a sentence with the words \"seize\", \"opportunity\", and \"enjoyment\".\n\n### Response:\nWe must seize every opportunity to enjoy life and make the most of it."
+  },
+  {
+    "instruction": "Translate this phrase from Spanish to English: El sol no brilla hoy.",
+    "input": "",
+    "output": "The sun is not shining today.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nTranslate this phrase from Spanish to English: El sol no brilla hoy.\n\n### Response:\nThe sun is not shining today."
+  },
+  {
+    "instruction": "Change the word \"muggy\" to another word with a similar meaning.",
+    "input": "muggy",
+    "output": "humid",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nChange the word \"muggy\" to another word with a similar meaning.\n\n### Input:\nmuggy\n\n### Response:\nhumid"
+  },
+  {
+    "instruction": "Who set the laws of motion?",
+    "input": "",
+    "output": "The laws of motion were set by the English scientist Isaac Newton in 1687.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nWho set the laws of motion?\n\n### Response:\nThe laws of motion were set by the English scientist Isaac Newton in 1687."
+  },
+  {
+    "instruction": "Explain the term “mutual intelligibility.”",
+    "input": "",
+    "output": "Mutual intelligibility is a term used to describe when two languages or dialects are closely related enough that people who speak them can understand each other. It does not mean that the speakers of the two languages are able to use the same grammar or pronunciation, but rather that they can interpret what the other person is saying.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nExplain the term “mutual intelligibility.”\n\n### Response:\nMutual intelligibility is a term used to describe when two languages or dialects are closely related enough that people who speak them can understand each other. It does not mean that the speakers of the two languages are able to use the same grammar or pronunciation, but rather that they can interpret what the other person is saying."
+  },
+  {
+    "instruction": "Find the approximate population of the given city/region.",
+    "input": "Moscow",
+    "output": "The approximate population of Moscow is 12.16 million people, making it one of the most populous cities in Europe.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nFind the approximate population of the given city/region.\n\n### Input:\nMoscow\n\n### Response:\nThe approximate population of Moscow is 12.16 million people, making it one of the most populous cities in Europe."
+  },
+  {
+    "instruction": "Classify the following sentence as either positive, negative, or neutral.\n\n\"I need to finish what I've started.\"",
+    "input": "",
+    "output": "Neutral",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nClassify the following sentence as either positive, negative, or neutral.\n\n\"I need to finish what I've started.\"\n\n### Response:\nNeutral"
+  },
+  {
+    "instruction": "Describe the etymology of the word \"democracy\".",
+    "input": "",
+    "output": "The word “democracy” is derived from the Greek words “demos”, meaning people, and “kratia”, meaning rule. It is thought to have first been used in ancient Athens to refer to their system of government, in which citizens would directly elect representatives to serve in the Assembly, the governing body of the city-state. Over time, the term was adopted and adapted to refer to other forms of government, in which citizens have the right to vote and participate in the decision-making process. Today, “democracy” is used to refer to a system of government that is based on the principle of majority rule.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nDescribe the etymology of the word \"democracy\".\n\n### Response:\nThe word “democracy” is derived from the Greek words “demos”, meaning people, and “kratia”, meaning rule. It is thought to have first been used in ancient Athens to refer to their system of government, in which citizens would directly elect representatives to serve in the Assembly, the governing body of the city-state. Over time, the term was adopted and adapted to refer to other forms of government, in which citizens have the right to vote and participate in the decision-making process. Today, “democracy” is used to refer to a system of government that is based on the principle of majority rule."
+  },
+  {
+    "instruction": "Provide three important software engineering principles.",
+    "input": "",
+    "output": "1. Separation of Concerns: Separating the application into distinct sections, each with its own specific purpose.\n2. Modular Design: Subdividing applications into self-contained and independent modules.\n3. Abstraction: Hiding unnecessary details and focusing in on the essential tasks at hand.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nProvide three important software engineering principles.\n\n### Response:\n1. Separation of Concerns: Separating the application into distinct sections, each with its own specific purpose.\n2. Modular Design: Subdividing applications into self-contained and independent modules.\n3. Abstraction: Hiding unnecessary details and focusing in on the essential tasks at hand."
+  },
+  {
+    "instruction": "Compile a list of the necessary items that are needed to safely go on a hike.",
+    "input": "",
+    "output": "Here is a list of items that are necessary to safely go on a hike: \n- Hiking boots \n- Waterproof clothing \n- Hiking backpack \n- Water (at least 1-2 liters/person) \n- Extra food \n- Sun protection (hat, sunglasses, sunscreen, etc.) \n- Whistle \n- Knife \n- Flashlight \n- Compass \n- Portable charger \n- Map \n- First aid kit \n- Emergency supplies (fire starter, shelter, etc.) \n- Fire extinguisher \n- Insect repellent.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nCompile a list of the necessary items that are needed to safely go on a hike.\n\n### Response:\nHere is a list of items that are necessary to safely go on a hike: \n- Hiking boots \n- Waterproof clothing \n- Hiking backpack \n- Water (at least 1-2 liters/person) \n- Extra food \n- Sun protection (hat, sunglasses, sunscreen, etc.) \n- Whistle \n- Knife \n- Flashlight \n- Compass \n- Portable charger \n- Map \n- First aid kit \n- Emergency supplies (fire starter, shelter, etc.) \n- Fire extinguisher \n- Insect repellent."
+  },
+  {
+    "instruction": "What is the British equivalent of ‘Hamburger'?",
+    "input": "",
+    "output": "The British equivalent of a Hamburger is a ‘Beefburger’.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nWhat is the British equivalent of ‘Hamburger'?\n\n### Response:\nThe British equivalent of a Hamburger is a ‘Beefburger’."
+  },
+  {
+    "instruction": "Match each input sentence with its corresponding sentence type.",
+    "input": "They are learning to write code.\n(A) interrogative\n(B) exclamatory \n(C) declarative\n(D) imperative",
+    "output": "C",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nMatch each input sentence with its corresponding sentence type.\n\n### Input:\nThey are learning to write code.\n(A) interrogative\n(B) exclamatory \n(C) declarative\n(D) imperative\n\n### Response:\nC"
+  },
+  {
+    "instruction": "Reformulate the phrase given to sound more polite.",
+    "input": "Hurry up",
+    "output": "Please hurry.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nReformulate the phrase given to sound more polite.\n\n### Input:\nHurry up\n\n### Response:\nPlease hurry."
+  },
+  {
+    "instruction": "List 5 activities for children to do over the holiday season.",
+    "input": "",
+    "output": "1. Build a snowman\n2. Build a gingerbread house\n3. Decorate a Christmas tree\n4. Craft handmade gifts\n5. Have a holiday movie night",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nList 5 activities for children to do over the holiday season.\n\n### Response:\n1. Build a snowman\n2. Build a gingerbread house\n3. Decorate a Christmas tree\n4. Craft handmade gifts\n5. Have a holiday movie night"
+  },
+  {
+    "instruction": "Determine if the following sets are equal: {1,2,3} and {2,3,1}.",
+    "input": "",
+    "output": "Yes, the sets {1,2,3} and {2,3,1} are equal. This is because sets are unordered collections of items, and the order of elements does not matter. Therefore, even though the elements of each set are arranged differently, they both contain the same elements.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nDetermine if the following sets are equal: {1,2,3} and {2,3,1}.\n\n### Response:\nYes, the sets {1,2,3} and {2,3,1} are equal. This is because sets are unordered collections of items, and the order of elements does not matter. Therefore, even though the elements of each set are arranged differently, they both contain the same elements."
+  },
+  {
+    "instruction": "Generate a menu for a vegan restaurant.",
+    "input": "",
+    "output": "Starters: \n- Roasted Red Pepper Hummus \n- Creamy Artichoke Dip \n- Sweet Potato Chips\n\nMain Dishes: \n- Hearty Lentil and Mushroom Bolognese \n- Vegan Tofu Curry \n- Mediterranean Veggie Bake\n\nSides: \n- Wild Rice Pilaf \n- Assorted Roasted Vegetables \n- Kale and Quinoa Salad\n\nDesserts: \n- Chocolate-Dipped Coconut Macaroons \n- Key Lime Pie \n- Vanilla Bean Cashew Cheesecake",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nGenerate a menu for a vegan restaurant.\n\n### Response:\nStarters: \n- Roasted Red Pepper Hummus \n- Creamy Artichoke Dip \n- Sweet Potato Chips\n\nMain Dishes: \n- Hearty Lentil and Mushroom Bolognese \n- Vegan Tofu Curry \n- Mediterranean Veggie Bake\n\nSides: \n- Wild Rice Pilaf \n- Assorted Roasted Vegetables \n- Kale and Quinoa Salad\n\nDesserts: \n- Chocolate-Dipped Coconut Macaroons \n- Key Lime Pie \n- Vanilla Bean Cashew Cheesecake"
+  },
+  {
+    "instruction": "Compose a jingle for a health food product.",
+    "input": "The health food product is a plant-based protein bar called \"Plant Power\".",
+    "output": "\"Plant Power will make you strong,\nA delicious and healthy snack all day long,\nFills your body with energy,\nSo grab a Plant Power protein bar and feel the power inside of you!\"",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nCompose a jingle for a health food product.\n\n### Input:\nThe health food product is a plant-based protein bar called \"Plant Power\".\n\n### Response:\n\"Plant Power will make you strong,\nA delicious and healthy snack all day long,\nFills your body with energy,\nSo grab a Plant Power protein bar and feel the power inside of you!\""
+  },
+  {
+    "instruction": "Construct an analogy that compares the terms “master” and “servant”",
+    "input": "",
+    "output": "A master is to a servant like a captain is to a sailor.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nConstruct an analogy that compares the terms “master” and “servant”\n\n### Response:\nA master is to a servant like a captain is to a sailor."
+  },
+  {
+    "instruction": "Outline the main points of the following lecture.",
+    "input": "Today we are discussing the causes, effects and solutions to climate change.",
+    "output": "- Causes of climate change: Burning of fossil fuels, deforestation, and agricultural activities.\n- Effects of climate change: Changes in temperature and precipitation, increased flooding, and increased intensity of natural disasters.\n- Solutions to climate change: Reducing greenhouse gas emissions, reforestation, and shifting to renewable sources of energy.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nOutline the main points of the following lecture.\n\n### Input:\nToday we are discussing the causes, effects and solutions to climate change.\n\n### Response:\n- Causes of climate change: Burning of fossil fuels, deforestation, and agricultural activities.\n- Effects of climate change: Changes in temperature and precipitation, increased flooding, and increased intensity of natural disasters.\n- Solutions to climate change: Reducing greenhouse gas emissions, reforestation, and shifting to renewable sources of energy."
+  },
+  {
+    "instruction": "Take the given sentence and modify it so that it expresses the opposite opinion.",
+    "input": "Paper straws are better for the environment.",
+    "output": "Paper straws are worse for the environment.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nTake the given sentence and modify it so that it expresses the opposite opinion.\n\n### Input:\nPaper straws are better for the environment.\n\n### Response:\nPaper straws are worse for the environment."
+  },
+  {
+    "instruction": "Generate five adjectives to describe the air in the room.",
+    "input": "",
+    "output": "Refreshing, invigorating, crisp, clean, fresh.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nGenerate five adjectives to describe the air in the room.\n\n### Response:\nRefreshing, invigorating, crisp, clean, fresh."
+  },
+  {
+    "instruction": "Write a haiku that describes rain.",
+    "input": "",
+    "output": "Soft rain pitter-patters,\nAn earthy scent on the breeze,\nNature renews again.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nWrite a haiku that describes rain.\n\n### Response:\nSoft rain pitter-patters,\nAn earthy scent on the breeze,\nNature renews again."
+  },
+  {
+    "instruction": "Come up with an example that demonstrates the use of irony.",
+    "input": "",
+    "output": "A woman walks into a store offering free cake but is told she has to pay for it, despite the sign outside the shop saying \"Free Cake\".",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nCome up with an example that demonstrates the use of irony.\n\n### Response:\nA woman walks into a store offering free cake but is told she has to pay for it, despite the sign outside the shop saying \"Free Cake\"."
+  },
+  {
+    "instruction": "Generate an example of how the service provided can be used.",
+    "input": "This new service provides automated barcode scanning.",
+    "output": "For example, stores can use automated barcode scanning to quickly and accurately track sales transactions. This saves time and allows the store to focus on providing a better customer experience.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nGenerate an example of how the service provided can be used.\n\n### Input:\nThis new service provides automated barcode scanning.\n\n### Response:\nFor example, stores can use automated barcode scanning to quickly and accurately track sales transactions. This saves time and allows the store to focus on providing a better customer experience."
+  },
+  {
+    "instruction": "Describe the significance of the Internet of Things.",
+    "input": "",
+    "output": "The Internet of Things (IoT) is the network of physical devices, vehicles, home appliances, and other items embedded with electronics, software, sensors, and network connectivity which enable these objects to connect and exchange data. The Internet of Things has become an important part of today’s digital infrastructure, playing an integral role in improving many aspects of the human experience such as healthcare, transportation, and communication. By connecting everyday objects to the Internet, the IoT connects the physical world to the digital world, allowing for improved convenience and efficiency, enhanced safety and security, and greater access to data.",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nDescribe the significance of the Internet of Things.\n\n### Response:\nThe Internet of Things (IoT) is the network of physical devices, vehicles, home appliances, and other items embedded with electronics, software, sensors, and network connectivity which enable these objects to connect and exchange data. The Internet of Things has become an important part of today’s digital infrastructure, playing an integral role in improving many aspects of the human experience such as healthcare, transportation, and communication. By connecting everyday objects to the Internet, the IoT connects the physical world to the digital world, allowing for improved convenience and efficiency, enhanced safety and security, and greater access to data."
+  },
+  {
+    "instruction": "Change the tense of this sentence from future to present.",
+    "input": "He will call me later.",
+    "output": "He is calling me later.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nChange the tense of this sentence from future to present.\n\n### Input:\nHe will call me later.\n\n### Response:\nHe is calling me later."
+  },
+  {
+    "instruction": "Come up with an experiment that tests the given concept.",
+    "input": "The effect of heavy metals on plant growth",
+    "output": "An experiment could be set up to test the effect of heavy metals on plant growth by growing two groups of plants in the same soil type, but with different levels of heavy metals present. The amount of growth and health of the plants at different stages of the experiment could be measured and compared to determine how the presence of heavy metals impacts plant growth.",
+    "text": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\nCome up with an experiment that tests the given concept.\n\n### Input:\nThe effect of heavy metals on plant growth\n\n### Response:\nAn experiment could be set up to test the effect of heavy metals on plant growth by growing two groups of plants in the same soil type, but with different levels of heavy metals present. The amount of growth and health of the plants at different stages of the experiment could be measured and compared to determine how the presence of heavy metals impacts plant growth."
+  },
+  {
+    "instruction": "Generate a list of 10 restaurants in Montreal with a rating of 4.5 stars or higher on Google.",
+    "input": "",
+    "output": "1. Joe Beef \n2. L'Express \n3. Les 400 Coups \n4. Festival Saveurs et Saisons\n5. Restaurant Toque!\n6. La Chronique \n7. Plats du Chef\n8. La Banquise \n9. La Habanera \n10. La Taqueria tacos et Burritos",
+    "text": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nGenerate a list of 10 restaurants in Montreal with a rating of 4.5 stars or higher on Google.\n\n### Response:\n1. Joe Beef \n2. L'Express \n3. Les 400 Coups \n4. Festival Saveurs et Saisons\n5. Restaurant Toque!\n6. La Chronique \n7. Plats du Chef\n8. La Banquise \n9. La Habanera \n10. La Taqueria tacos et Burritos"
+  }
+]
