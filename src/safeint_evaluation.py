@@ -378,8 +378,8 @@ class SafeIntEvaluator:
                 asr_values = [results['per_dataset'][ds]['asr_keyword'] for ds in datasets]
                 
                 plt.bar(datasets, asr_values, color='skyblue')
-                plt.axhline(y=results['overall']['asr_keyword'], color='red', linestyle='--', label=f'Overall ASR: {results['overall']['asr_keyword']:.4f}')
-                
+                plt.axhline(y=results['overall']['asr_keyword'], color='red', linestyle='--', label=f'Overall ASR: {results["overall"]["asr_keyword"]:.4f}')
+
                 plt.title('Attack Success Rate (ASR) by Dataset')
                 plt.xlabel('Dataset')
                 plt.ylabel('ASR')
@@ -499,7 +499,7 @@ class SafeIntEvaluator:
                     shadow=True, startangle=90)
             plt.axis('equal')
             plt.title('Robustness Against Adaptive Attacks')
-            plt.text(0, -1.2, f'ASR: {results['asr']:.4f} ({"Meets" if results['meets_requirement'] else "Does not meet"} paper standard)', 
+            plt.text(0, -1.2, f'ASR: {results["asr"]:.4f} ({"Meets" if results["meets_requirement"] else "Does not meet"} paper standard)', 
                      horizontalalignment='center', fontsize=12)
             
             # 保存图表

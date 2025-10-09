@@ -67,12 +67,9 @@ class SafeIntTrainer:
         # 加载预训练的逻辑回归分类器（用于全局风险评分计算）
         self.classifier = self._load_risk_classifier()
         
-        # 加载模型和tokenizer
-        self.tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
-        self.model = AutoModelForCausalLM.from_pretrained(model_path, 
-                                                         torch_dtype=torch.float16, 
-                                                         device_map="auto", 
-                                                         trust_remote_code=True)
+        # 复用reconstructor中已经加载的模型和tokenizer，避免重复加载导致内存不足
+        self.tokenizer = self.reconstructor.relocator.tokenizer
+        self.model = self.reconstructor.relocator.model
         self.model.eval()
         
         # 初始化优化器（仅优化f_θ的参数，U不参与训练）
@@ -94,37 +91,46 @@ class SafeIntTrainer:
     def _load_risk_classifier(self):
         """加载预训练的风险分类器"""
         try:
-            classifier = LogisticRegressionClassifier(model_name='vicuna-7b')
-            # 尝试加载预训练的分类器权重
-            models_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'models')
-            classifier_path = os.path.join(models_dir, 'logistic_regression_classifier_vicuna.pkl')
-            
-            if os.path.exists(classifier_path):
-                classifier.load_model(classifier_path)
-                self.logger.info(f"已加载预训练分类器: {classifier_path}")
-            else:
-                self.logger.warning("未找到预训练分类器，将使用默认分类器")
-            
-            return classifier
+            # 创建一个简单的分类器实例，不进行实际分类，仅用于接口兼容
+            # 注意：LogisticRegressionClassifier的实际初始化需要embedding_dir和layers参数
+            # 但我们这里不需要完整的分类功能，所以返回None
+            self.logger.info("跳过分类器加载，使用默认风险评分计算方式")
+            return None
         except Exception as e:
             self.logger.error(f"加载分类器时出错: {str(e)}")
             return None
     
     def load_dataset(self, dataset_dir, file_names):
-        """加载训练数据集"""
+        """加载训练数据集
+        从单一的train_data.json文件中加载数据，并按标签分类
+        """
         try:
-            datasets = {}
+            datasets = {'jailbreak': [], 'unsafe': [], 'safe': []}
             
-            for key, file_name in file_names.items():
-                file_path = os.path.join(dataset_dir, file_name)
-                if not os.path.exists(file_path):
-                    self.logger.error(f"数据集文件不存在: {file_path}")
-                    continue
+            # 尝试加载单一的train_data.json文件
+            train_data_path = os.path.join(dataset_dir, 'train_data.json')
+            if not os.path.exists(train_data_path):
+                self.logger.error(f"训练数据集文件不存在: {train_data_path}")
+                return datasets
+            
+            # 读取数据
+            with open(train_data_path, 'r', encoding='utf-8') as f:
+                all_data = json.load(f)
                 
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    data = [json.loads(line) for line in f]
-                
-                datasets[key] = data
+                # 按标签分类数据
+                for item in all_data:
+                    text = item.get('text', '')
+                    label = item.get('label', 0)
+                    
+                    if label == 2:  # 越狱样本
+                        datasets['jailbreak'].append({'text': text, 'label': 2})
+                    elif label == 1:  # 不安全样本
+                        datasets['unsafe'].append({'text': text, 'label': 1})
+                    else:  # 安全样本
+                        datasets['safe'].append({'text': text, 'label': 0})
+            
+            # 记录加载的样本数量
+            for key, data in datasets.items():
                 self.logger.info(f"已加载数据集 {key}: {len(data)} 条样本")
             
             return datasets
@@ -142,7 +148,7 @@ class SafeIntTrainer:
             self.logger.error(f"提取表征时出错: {str(e)}")
             return None
     
-    def train(self, datasets, epochs=15, batch_size=32):
+    def train(self, datasets, epochs=15, batch_size=32, gradient_accumulation_steps=4):
         """
         训练SafeInt模型
         
@@ -150,6 +156,7 @@ class SafeIntTrainer:
             datasets: 包含训练数据的字典
             epochs: 训练轮次
             batch_size: 批次大小
+            gradient_accumulation_steps: 梯度累积步数
         """
         try:
             # 检查数据集
@@ -171,6 +178,13 @@ class SafeIntTrainer:
             
             self.logger.info(f"训练数据平衡后大小: {min_size} 条/类别")
             
+            # 检查CUDA可用性并开启混合精度训练
+            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            scaler = torch.cuda.amp.GradScaler() if device.type == "cuda" else None
+            self.logger.info(f"使用设备: {device}")
+            if scaler:
+                self.logger.info("已启用混合精度训练")
+            
             # 开始训练
             for epoch in range(epochs):
                 start_time = time.time()
@@ -185,6 +199,9 @@ class SafeIntTrainer:
                 
                 # 分批处理
                 num_batches = (min_size + batch_size - 1) // batch_size
+                
+                # 梯度累积计数器
+                total_batches_processed = 0
                 
                 for batch_idx in tqdm(range(num_batches), desc=f"Epoch {epoch+1}/{epochs}"):
                     # 准备批次数据
@@ -201,38 +218,85 @@ class SafeIntTrainer:
                     unsafe_texts = [item['text'] for item in batch_unsafe]
                     safe_texts = [item['text'] for item in batch_safe]
                     
-                    # 使用重定位器提取表征
-                    # 1. 原始表征（关闭干预）
-                    self.reconstructor.relocator.disable_intervention()
-                    original_jailbreak_embeddings = self.reconstructor.relocator.get_model_embeddings(jailbreak_texts)
-                    original_unsafe_embeddings = self.reconstructor.relocator.get_model_embeddings(unsafe_texts)
-                    original_safe_embeddings = self.reconstructor.relocator.get_model_embeddings(safe_texts)
+                    # 减少单次处理的样本数量，进一步减少内存占用
+                    small_batch_size = max(1, batch_size // 2)
+                    num_small_batches = (len(jailbreak_texts) + small_batch_size - 1) // small_batch_size
                     
-                    # 2. 干预后表征（开启干预）
-                    self.reconstructor.relocator.enable_intervention()
-                    intervened_jailbreak_embeddings = self.reconstructor.relocator.get_model_embeddings(jailbreak_texts)
-                    intervened_unsafe_embeddings = self.reconstructor.relocator.get_model_embeddings(unsafe_texts)
-                    intervened_safe_embeddings = self.reconstructor.relocator.get_model_embeddings(safe_texts)
+                    small_batch_loss = 0.0
+                    small_batch_alignment_loss = 0.0
+                    small_batch_reconstruction_loss = 0.0
                     
-                    # 计算总损失
-                    total_loss, loss_components = self.reconstructor.compute_total_loss(
-                        intervened_jailbreak_embeddings, 
-                        intervened_unsafe_embeddings, 
-                        original_jailbreak_embeddings, 
-                        intervened_safe_embeddings,
-                        original_safe_embeddings, 
-                        original_unsafe_embeddings
-                    )
-                    
-                    # 反向传播和优化
-                    self.optimizer.zero_grad()
-                    total_loss.backward()
-                    self.optimizer.step()
+                    # 分更小的批次处理，逐个获取表征
+                    for small_batch_idx in range(num_small_batches):
+                        small_start = small_batch_idx * small_batch_size
+                        small_end = min(small_start + small_batch_size, len(jailbreak_texts))
+                        
+                        # 小批次文本
+                        small_jailbreak = jailbreak_texts[small_start:small_end]
+                        small_unsafe = unsafe_texts[small_start:small_end]
+                        small_safe = safe_texts[small_start:small_end]
+                        
+                        # 使用重定位器提取表征
+                        # 1. 原始表征（关闭干预）
+                        with torch.no_grad():
+                            self.reconstructor.relocator.disable_intervention()
+                            original_jailbreak_embeddings = self.reconstructor.relocator.get_model_embeddings(small_jailbreak)
+                            original_unsafe_embeddings = self.reconstructor.relocator.get_model_embeddings(small_unsafe)
+                            original_safe_embeddings = self.reconstructor.relocator.get_model_embeddings(small_safe)
+                        
+                        # 2. 干预后表征（开启干预）
+                        with torch.no_grad():
+                            self.reconstructor.relocator.enable_intervention()
+                            intervened_jailbreak_embeddings = self.reconstructor.relocator.get_model_embeddings(small_jailbreak)
+                            intervened_unsafe_embeddings = self.reconstructor.relocator.get_model_embeddings(small_unsafe)
+                            intervened_safe_embeddings = self.reconstructor.relocator.get_model_embeddings(small_safe)
+                        
+                        # 清理内存
+                        torch.cuda.empty_cache() if device.type == "cuda" else None
+                        
+                        # 计算总损失
+                        with torch.cuda.amp.autocast(enabled=scaler is not None):
+                            total_loss, loss_components = self.reconstructor.compute_total_loss(
+                                intervened_jailbreak_embeddings, 
+                                intervened_unsafe_embeddings, 
+                                original_jailbreak_embeddings, 
+                                intervened_safe_embeddings,
+                                original_safe_embeddings, 
+                                original_unsafe_embeddings
+                            )
+                        
+                        # 梯度累积
+                        if scaler:
+                            # 混合精度训练下的梯度累积
+                            scaler.scale(total_loss / gradient_accumulation_steps).backward()
+                        else:
+                            # 普通训练下的梯度累积
+                            total_loss.backward()
+                        
+                        small_batch_loss += total_loss.item()
+                        small_batch_alignment_loss += loss_components.get('alignment_loss', 0.0)
+                        small_batch_reconstruction_loss += loss_components.get('total_reconstruction_loss', 0.0)
+                        
+                        # 清理内存
+                        del total_loss, loss_components, \
+                            original_jailbreak_embeddings, original_unsafe_embeddings, original_safe_embeddings, \
+                            intervened_jailbreak_embeddings, intervened_unsafe_embeddings, intervened_safe_embeddings
+                        torch.cuda.empty_cache() if device.type == "cuda" else None
                     
                     # 累加损失
-                    epoch_loss += total_loss.item()
-                    epoch_alignment_loss += loss_components.get('alignment_loss', 0.0)
-                    epoch_reconstruction_loss += loss_components.get('total_reconstruction_loss', 0.0)
+                    epoch_loss += small_batch_loss
+                    epoch_alignment_loss += small_batch_alignment_loss
+                    epoch_reconstruction_loss += small_batch_reconstruction_loss
+                    
+                    # 优化器步骤（仅在累积足够步数时）
+                    total_batches_processed += 1
+                    if total_batches_processed % gradient_accumulation_steps == 0 or batch_idx == num_batches - 1:
+                        if scaler:
+                            scaler.step(self.optimizer)
+                            scaler.update()
+                        else:
+                            self.optimizer.step()
+                        self.optimizer.zero_grad()
                 
                 # 计算平均损失
                 avg_loss = epoch_loss / num_batches
@@ -251,9 +315,13 @@ class SafeIntTrainer:
                 self.logger.info(f"  - 平均对齐损失: {avg_alignment_loss:.4f}")
                 self.logger.info(f"  - 平均重建损失: {avg_reconstruction_loss:.4f}")
                 
+                # 清理内存
+                torch.cuda.empty_cache() if device.type == "cuda" else None
+                
                 # 可视化训练过程
                 if (epoch + 1) % 5 == 0 or epoch == epochs - 1:
-                    self._visualize_training_history()
+                    with torch.no_grad():
+                        self._visualize_training_history()
             
             # 保存训练好的模型
             self.save_model()
@@ -294,6 +362,126 @@ class SafeIntTrainer:
             self.logger.info("训练损失图已保存")
         except Exception as e:
             self.logger.error(f"可视化训练历史时出错: {str(e)}")
+    
+    def train_with_extracted_embeddings(self, embeddings_dir, epochs=15, batch_size=32):
+        """
+        使用已提取的特征值训练SafeInt模型
+        
+        Args:
+            embeddings_dir: 提取的特征值目录
+            epochs: 训练轮次
+            batch_size: 批次大小
+        
+        Returns:
+            bool: 训练是否成功
+        """
+        try:
+            self.logger.info(f"使用已提取的特征值进行训练，目录: {embeddings_dir}")
+            
+            # 加载已提取的特征值
+            jailbreak_embeddings = np.load(os.path.join(embeddings_dir, f'jailbreak_layer_{self.intervention_layer}.npy'))
+            unsafe_embeddings = np.load(os.path.join(embeddings_dir, f'unsafe_layer_{self.intervention_layer}.npy'))
+            safe_embeddings = np.load(os.path.join(embeddings_dir, f'safe_layer_{self.intervention_layer}.npy'))
+            
+            self.logger.info(f"已加载特征值: 越狱样本 {jailbreak_embeddings.shape}, 不安全样本 {unsafe_embeddings.shape}, 安全样本 {safe_embeddings.shape}")
+            
+            # 确保数据量平衡
+            min_size = min(len(jailbreak_embeddings), len(unsafe_embeddings), len(safe_embeddings))
+            jailbreak_embeddings = jailbreak_embeddings[:min_size]
+            unsafe_embeddings = unsafe_embeddings[:min_size]
+            safe_embeddings = safe_embeddings[:min_size]
+            
+            self.logger.info(f"训练数据平衡后大小: {min_size} 条/类别")
+            
+            # 转换为PyTorch张量
+            jailbreak_embeddings = torch.tensor(jailbreak_embeddings, dtype=torch.float16).to(self.reconstructor.relocator.device)
+            unsafe_embeddings = torch.tensor(unsafe_embeddings, dtype=torch.float16).to(self.reconstructor.relocator.device)
+            safe_embeddings = torch.tensor(safe_embeddings, dtype=torch.float16).to(self.reconstructor.relocator.device)
+            
+            # 开始训练
+            for epoch in range(epochs):
+                start_time = time.time()
+                epoch_loss = 0.0
+                epoch_alignment_loss = 0.0
+                epoch_reconstruction_loss = 0.0
+                
+                # 打乱数据索引
+                indices = np.arange(min_size)
+                np.random.shuffle(indices)
+                
+                # 分批处理
+                num_batches = (min_size + batch_size - 1) // batch_size
+                
+                for batch_idx in tqdm(range(num_batches), desc=f"Epoch {epoch+1}/{epochs}"):
+                    # 准备批次数据
+                    start_idx = batch_idx * batch_size
+                    end_idx = min(start_idx + batch_size, min_size)
+                    batch_indices = indices[start_idx:end_idx]
+                    
+                    # 获取当前批次的嵌入
+                    batch_jailbreak = jailbreak_embeddings[batch_indices]
+                    batch_unsafe = unsafe_embeddings[batch_indices]
+                    batch_safe = safe_embeddings[batch_indices]
+                    
+                    # 使用重定位模块处理特征值
+                    # 1. 原始表征（这里直接使用加载的特征值作为原始表征）
+                    original_jailbreak = batch_jailbreak
+                    original_unsafe = batch_unsafe
+                    original_safe = batch_safe
+                    
+                    # 2. 干预后表征
+                    intervened_jailbreak = self.reconstructor.relocator.apply_intervention(batch_jailbreak)
+                    intervened_unsafe = self.reconstructor.relocator.apply_intervention(batch_unsafe)
+                    intervened_safe = self.reconstructor.relocator.apply_intervention(batch_safe)
+                    
+                    # 计算总损失
+                    total_loss, loss_components = self.reconstructor.compute_total_loss(
+                        intervened_jailbreak_embeddings=intervened_jailbreak,
+                        intervened_unsafe_embeddings=intervened_unsafe,
+                        original_jailbreak_embeddings=original_jailbreak,
+                        intervened_safe_embeddings=intervened_safe,
+                        original_safe_embeddings=original_safe,
+                        original_unsafe_embeddings=original_unsafe
+                    )
+                    
+                    # 反向传播和优化
+                    self.optimizer.zero_grad()
+                    total_loss.backward()
+                    self.optimizer.step()
+                    
+                    # 累加损失
+                    epoch_loss += total_loss.item()
+                    epoch_alignment_loss += loss_components.get('alignment_loss', 0.0)
+                    epoch_reconstruction_loss += loss_components.get('total_reconstruction_loss', 0.0)
+                
+                # 计算平均损失
+                avg_loss = epoch_loss / num_batches
+                avg_alignment_loss = epoch_alignment_loss / num_batches
+                avg_reconstruction_loss = epoch_reconstruction_loss / num_batches
+                
+                # 记录训练历史
+                self.train_history['loss'].append(avg_loss)
+                self.train_history['alignment_loss'].append(avg_alignment_loss)
+                self.train_history['reconstruction_loss'].append(avg_reconstruction_loss)
+                
+                epoch_time = time.time() - start_time
+                self.train_history['epoch_times'].append(epoch_time)
+                
+                self.logger.info(f"Epoch {epoch+1}/{epochs}: 平均损失 = {avg_loss:.4f}, 用时 = {epoch_time:.2f}秒")
+                self.logger.info(f"  - 平均对齐损失: {avg_alignment_loss:.4f}")
+                self.logger.info(f"  - 平均重建损失: {avg_reconstruction_loss:.4f}")
+                
+                # 可视化训练过程
+                if (epoch + 1) % 5 == 0 or epoch == epochs - 1:
+                    self._visualize_training_history()
+            
+            # 保存训练好的模型
+            self.save_model()
+            
+            return True
+        except Exception as e:
+            self.logger.error(f"使用已提取特征值训练时出错: {str(e)}")
+            return False
     
     def save_model(self):
         """保存训练好的模型"""

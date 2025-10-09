@@ -23,7 +23,7 @@ def setup_logger():
 class SafeIntRepresentationAligner:
     """SafeInt表征对齐器，实现论文3.2节的公式3-5"""
     def __init__(self, model_path, intervention_layer=12, alignment_layers=None,
-                 subspace_rank=32, temperature=0.1):
+                 subspace_rank=32, temperature=0.1, relocator=None):
         """
         初始化SafeInt表征对齐器
         
@@ -33,6 +33,7 @@ class SafeIntRepresentationAligner:
             alignment_layers: 对齐层列表，Vicuna设置为13-24层
             subspace_rank: 低秩子空间维度r
             temperature: 对比损失的温度参数τ，论文设置为0.1
+            relocator: 可选的已初始化的SafeIntRepresentationRelocator实例，用于复用模型
         """
         self.model_path = model_path
         self.intervention_layer = intervention_layer
@@ -45,12 +46,17 @@ class SafeIntRepresentationAligner:
         self.results_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'results', 'alignment')
         os.makedirs(self.results_dir, exist_ok=True)
         
-        # 初始化表征重定位器
-        self.relocator = SafeIntRepresentationRelocator(
-            model_path=model_path,
-            intervention_layer=intervention_layer,
-            subspace_rank=subspace_rank
-        )
+        # 使用传入的重定位器实例或创建新实例
+        if relocator is not None:
+            self.relocator = relocator
+            self.logger.info("复用已有的SafeIntRepresentationRelocator实例")
+        else:
+            self.logger.warning("未提供relocator实例，创建新的SafeIntRepresentationRelocator实例")
+            self.relocator = SafeIntRepresentationRelocator(
+                model_path=model_path,
+                intervention_layer=intervention_layer,
+                subspace_rank=subspace_rank
+            )
         
         # 初始化逻辑回归分类器加载器
         self.embedding_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'embeddings')

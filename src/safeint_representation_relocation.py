@@ -51,6 +51,7 @@ class SafeIntRepresentationRelocator:
         self.intervention_layer = intervention_layer
         self.subspace_rank = subspace_rank
         self.logger = setup_logger()
+        self.intervention_enabled = True  # 新增: 控制是否启用干预
         
         # 创建模型保存目录
         self.model_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'models', 'safeint')
@@ -78,6 +79,61 @@ class SafeIntRepresentationRelocator:
         
         # 注册Hook来捕获和干预指定层的激活
         self._register_hooks()
+
+    def enable_intervention(self):
+        """启用表征干预"""
+        self.intervention_enabled = True
+        self.logger.info("表征干预已启用")
+
+    def disable_intervention(self):
+        """禁用表征干预"""
+        self.intervention_enabled = False
+        self.logger.info("表征干预已禁用")
+
+    def apply_intervention(self, h):
+        """
+        直接对输入的表征应用干预
+        
+        Args:
+            h: 输入的表征张量，形状: [batch_size, hidden_dim]
+            
+        Returns:
+            h_tilde: 干预后的表征张量
+        """
+        # 检查是否启用干预
+        if not self.intervention_enabled:
+            return h.clone()
+        
+        # 对每个样本的表征进行干预
+        batch_size = h.shape[0]
+        h_tilde = h.clone()
+        
+        # 启用梯度计算
+        with torch.enable_grad():
+            for i in range(batch_size):
+                # 获取第i个样本的表征 h^(I)
+                h_i = h[i].unsqueeze(0).clone()
+                h_i.requires_grad = True
+                
+                # 计算U·h^(I)（子空间投影）
+                U_h_i = torch.matmul(self.U, h_i.T).T  # 形状: [1, r]
+                
+                # 计算f_θ(h^(I))
+                f_theta = self.relocation_module(h_i)
+                
+                # 计算残差项 f_theta(h^(I)) - U·h^(I)
+                residual = f_theta - U_h_i
+                
+                # 计算U^T·residual
+                U_T_residual = torch.matmul(residual, self.U)
+                
+                # 计算干预后表征 h̃^(I) = h^(I) + U^T·(f_theta(h^(I)) - U·h^(I))
+                h_tilde_i = h_i + U_T_residual
+                
+                # 更新输出
+                h_tilde[i] = h_tilde_i.squeeze(0)
+        
+        return h_tilde
     
     def _load_model_and_tokenizer(self):
         """加载LLM模型和tokenizer"""
@@ -129,6 +185,10 @@ class SafeIntRepresentationRelocator:
     def _create_intervention_hook(self):
         """创建干预Hook函数，实现论文公式2的表征重定位"""
         def hook_fn(module, input, output):
+            # 检查是否启用干预
+            if not self.intervention_enabled:
+                return output
+            
             # 获取原始输出张量
             original_output = output[0].clone()
             
@@ -250,6 +310,67 @@ class SafeIntRepresentationRelocator:
         torch.cuda.empty_cache()
         
         self.logger.info("重定位器已关闭，Hook已移除，内存已释放")
+
+# 添加获取模型嵌入的方法
+def get_model_embeddings(self, texts):
+    """
+    从文本中获取模型的嵌入向量
+    
+    Args:
+        texts: 文本列表
+        
+    Returns:
+        embeddings: 嵌入向量列表
+    """
+    # 编码文本
+    inputs = self.tokenizer(
+        texts,
+        return_tensors="pt",
+        padding=True,
+        truncation=True,
+        max_length=512
+    )
+    
+    # 将输入移动到模型设备
+    for k, v in inputs.items():
+        inputs[k] = v.to(self.model.device)
+    
+    # 存储中间层输出
+    embeddings = []
+    
+    def hook_fn(module, input, output):
+        # 获取最后一个token的嵌入
+        last_token_embedding = output[0][:, -1, :].detach()
+        embeddings.append(last_token_embedding)
+    
+    # 注册临时Hook
+    hook = None
+    for name, module in self.model.named_modules():
+        if 'layers' in name and 'mlp' not in name and 'self_attn' not in name:
+            try:
+                layer_idx = int(name.split('.')[-1])
+                if layer_idx == self.intervention_layer:
+                    hook = module.register_forward_hook(hook_fn)
+                    break
+            except ValueError:
+                continue
+    
+    # 前向传播
+    with torch.no_grad():
+        self.model(**inputs)
+    
+    # 移除Hook
+    if hook:
+        hook.remove()
+    
+    # 如果没有捕获到嵌入，返回None
+    if not embeddings:
+        return None
+    
+    return embeddings[0]
+
+# 将get_model_embeddings方法添加到SafeIntRepresentationRelocator类
+safeint_method = SafeIntRepresentationRelocator.get_model_embeddings = get_model_embeddings
 
 if __name__ == "__main__":
     # 示例使用

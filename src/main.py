@@ -45,10 +45,12 @@ class SafeIntPipeline:
             config: 配置字典
         """
         self.config = config
-        self.logger = setup_logger(config.get('log_file'))
         
-        # 创建必要的目录
+        # 首先创建必要的目录，确保日志目录存在
         self._create_directories()
+        
+        # 然后再初始化日志记录器
+        self.logger = setup_logger(config.get('log_file'))
         
         # 初始化各个模块
         self.extractor = None
@@ -192,27 +194,55 @@ class SafeIntPipeline:
                 temperature=self.config.get('temperature', 0.1)
             )
             
-            # 加载训练数据集
-            train_data_path = self.config.get('train_data_path')
-            if train_data_path and os.path.exists(train_data_path):
-                file_names = {
-                    'jailbreak': 'train_jailbreak.json',
-                    'unsafe': 'train_unsafe.json',
-                    'safe': 'train_safe.json'
-                }
+            # 检查是否存在已提取的特征值
+            embeddings_dir = os.path.join(self.config.get('embeddings_dir'), 'train')
+            use_extracted_embeddings = False
+            
+            if os.path.exists(embeddings_dir):
+                # 检查关键特征文件是否存在
+                required_files = [
+                    f'jailbreak_layer_{self.config.get("intervention_layer", 12)}.npy',
+                    f'unsafe_layer_{self.config.get("intervention_layer", 12)}.npy',
+                    f'safe_layer_{self.config.get("intervention_layer", 12)}.npy'
+                ]
                 
-                datasets = self.trainer.load_dataset(train_data_path, file_names)
-                
-                if datasets and all(key in datasets for key in ['jailbreak', 'unsafe', 'safe']):
-                    # 开始训练
-                    self.trainer.train(
-                        datasets=datasets,
-                        epochs=self.config.get('epochs', 15),
-                        batch_size=self.config.get('batch_size', 32)
-                    )
+                if all(os.path.exists(os.path.join(embeddings_dir, f)) for f in required_files):
+                    self.logger.info("检测到已提取的特征值，将直接使用它们进行训练")
+                    use_extracted_embeddings = True
                 else:
-                    self.logger.error("未能加载完整的训练数据集")
+                    self.logger.info("未检测到完整的已提取特征值，将加载文本数据重新提取")
+            
+            if use_extracted_embeddings:
+                # 使用已提取的特征值进行训练
+                success = self.trainer.train_with_extracted_embeddings(
+                    embeddings_dir=embeddings_dir,
+                    epochs=self.config.get('epochs', 15),
+                    batch_size=self.config.get('batch_size', 32)
+                )
+                if not success:
                     return False
+            else:
+                # 加载训练数据集
+                train_data_path = self.config.get('train_data_path')
+                if train_data_path and os.path.exists(train_data_path):
+                    file_names = {
+                        'jailbreak': 'train_jailbreak.json',
+                        'unsafe': 'train_unsafe.json',
+                        'safe': 'train_safe.json'
+                    }
+                    
+                    datasets = self.trainer.load_dataset(train_data_path, file_names)
+                    
+                    if datasets and all(key in datasets for key in ['jailbreak', 'unsafe', 'safe']):
+                        # 开始训练
+                        self.trainer.train(
+                            datasets=datasets,
+                            epochs=self.config.get('epochs', 15),
+                            batch_size=self.config.get('batch_size', 32)
+                        )
+                    else:
+                        self.logger.error("未能加载完整的训练数据集")
+                        return False
             
             self.logger.info("SafeInt模型训练完成")
             return True

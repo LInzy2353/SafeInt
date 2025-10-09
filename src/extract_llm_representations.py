@@ -5,19 +5,21 @@ import numpy as np
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 class LLMRepresentationExtractor:
-    def __init__(self, model_path, target_layers=None, batch_size=4):
+    def __init__(self, model_name, model_path, layers=None, batch_size=4):
         """初始化LLM表征提取器
         
         Args:
+            model_name: 模型名称
             model_path: 模型路径
-            target_layers: 目标层列表，如None则默认选择中间层到深层
+            layers: 目标层列表
             batch_size: 批处理大小
         """
+        self.model_name = model_name
         self.model_path = model_path
         self.batch_size = batch_size
         
         # 默认选择中间层到深层（Llama2-7B的10-25层）
-        self.target_layers = target_layers if target_layers else list(range(10, 26))
+        self.target_layers = layers if layers else list(range(10, 26))
         
         # 存储提取的表征
         self.extracted_representations = {layer: [] for layer in self.target_layers}
@@ -51,8 +53,6 @@ class LLMRepresentationExtractor:
             self.model_path,
             torch_dtype=torch.float16,
             device_map="auto",
-            load_in_8bit=False,
-            load_in_4bit=False,
             trust_remote_code=True
         )
         
@@ -141,6 +141,63 @@ class LLMRepresentationExtractor:
         self.extracted_representations = {layer: [] for layer in self.target_layers}
         
         print(f"{split_name}数据集表征提取完成")
+        
+    def extract_and_save_embeddings(self, data_file, output_dir, data_type):
+        """从数据文件中提取嵌入并保存
+        
+        Args:
+            data_file: 数据文件路径
+            output_dir: 输出目录
+            data_type: 数据类型（jailbreak/unsafe/safe）
+        """
+        print(f"正在从文件{data_file}提取{data_type}数据的表征")
+        
+        # 确保输出目录存在
+        os.makedirs(output_dir, exist_ok=True)
+        
+        # 加载数据集
+        with open(data_file, 'r', encoding='utf-8') as f:
+            dataset = json.load(f)
+        
+        # 提取文本列表
+        texts = [item['text'] for item in dataset]
+        
+        # 批量处理文本
+        total_batches = (len(texts) + self.batch_size - 1) // self.batch_size
+        for i in range(total_batches):
+            start_idx = i * self.batch_size
+            end_idx = min(start_idx + self.batch_size, len(texts))
+            batch_texts = texts[start_idx:end_idx]
+            
+            print(f"处理批次 {i+1}/{total_batches}")
+            self._process_batch(batch_texts)
+        
+        # 合并并保存提取的表征
+        self._save_representations_by_type(output_dir, data_type)
+        
+        # 清空提取的表征，准备下一个数据集
+        self.extracted_representations = {layer: [] for layer in self.target_layers}
+        
+        print(f"{data_type}数据表征提取完成")
+        
+    def _save_representations_by_type(self, output_dir, data_type):
+        """根据数据类型保存提取的表征
+        
+        Args:
+            output_dir: 输出目录
+            data_type: 数据类型
+        """
+        for layer_idx, representations in self.extracted_representations.items():
+            if representations:
+                # 合并所有批次的表征
+                all_representations = np.concatenate(representations, axis=0)
+                
+                # 保存为numpy数组，使用data_type_layer_{layer_idx}.npy格式
+                save_path = os.path.join(output_dir, f"{data_type}_layer_{layer_idx}.npy")
+                np.save(save_path, all_representations)
+                print(f"层 {layer_idx} 的{data_type}表征已保存至: {save_path}")
+            else:
+                print(f"警告：层 {layer_idx} 没有提取到{data_type}表征")
     
     def _save_representations(self, split_name):
         """保存提取的表征"""

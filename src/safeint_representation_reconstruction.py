@@ -55,14 +55,20 @@ class SafeIntRepresentationReconstructor:
             subspace_rank=subspace_rank
         )
         
-        # 初始化表征对齐器
+        # 初始化表征对齐器，并传入已创建的relocator实例以复用模型
         self.aligner = SafeIntRepresentationAligner(
             model_path=model_path,
             intervention_layer=intervention_layer,
             alignment_layers=alignment_layers,
             subspace_rank=subspace_rank,
-            temperature=temperature
+            temperature=temperature,
+            relocator=self.relocator  # 传入已创建的relocator实例
         )
+        
+        # 获取模型配置
+        self.model = self.relocator.model
+        self.tokenizer = self.relocator.tokenizer
+        self.hidden_size = self.model.config.hidden_size
         
         # MSE损失函数
         self.mse_loss = torch.nn.MSELoss()
