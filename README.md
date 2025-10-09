@@ -65,7 +65,24 @@ python src/logistic_regression_classifier.py --layers 10-25
 # 可视化结果将保存在figures/目录
 ```
 
-### 第六步：执行端到端训练
+### 第六步：使用主脚本运行完整流程
+
+我们提供了一个新的主脚本`main.py`，整合了所有模块的功能：
+
+```bash
+cd /home/blcu_lzy2025/SafeInt
+python src/main.py --model vicuna-7b --run_mode full --layers 10-25
+```
+
+主要参数说明：
+- `--model`：使用的模型名称（默认：vicuna-7b）
+- `--run_mode`：运行模式（full/extract/classifier/train/inference/evaluate）
+- `--layers`：处理的层范围（如"10-25"或"10,15,20"）
+- `--batch_size`：批处理大小（默认：32）
+- `--learning_rate`：学习率（默认：1e-4）
+- `--num_epochs`：训练轮次（默认：15）
+
+### 第七步：执行端到端训练（传统方式）
 
 ```bash
 cd /home/blcu_lzy2025/SafeInt
@@ -73,6 +90,40 @@ python src/train_model.py
 # 训练日志将输出到控制台
 # 模型将保存在models/safety_model/目录
 ```
+
+## SafeInt核心模块说明
+
+我们实现了论文中描述的5个核心模块：
+
+### 1. 表征重定位（Representation Relocation）
+- 实现论文3.1节，公式2
+- 将中间层（第12层）表征投影到安全相关低秩子空间
+- 通过参数化映射实现"越狱表征→不安全表征"的定向迁移
+- 使用命令：`python src/safeint_representation_relocation.py`
+
+### 2. 表征对齐（Representation Alignment）
+- 实现论文3.2节，公式3-5
+- 通过"分类损失+对比损失"优化分布一致性
+- 强制干预后的越狱表征与不安全样本表征分布对齐
+- 使用命令：`python src/safeint_representation_alignment.py`
+
+### 3. 表征重建（Representation Reconstruction）
+- 实现论文3.3节，公式6-7
+- 通过MSE损失约束安全/不安全样本表征不变
+- 避免过度干预破坏模型效用
+- 使用命令：`python src/safeint_representation_reconstruction.py`
+
+### 4. 训练优化与推理集成
+- 优化仅针对干预模块参数（权重W_θ和偏置b_θ）
+- 使用AdamW优化器，学习率1e-4，权重衰减1e-5
+- 集成到模型推理流程，实现"实时风险检测→动态干预"
+- 使用命令：`python src/safeint_training.py`
+
+### 5. 效果评估
+- 防御效果：使用ASR（Attack Success Rate）指标评估
+- 效用保持：对比MT-Bench和Just-Eval评分
+- 鲁棒性：评估自适应攻击下的防御效果
+- 使用命令：`python src/safeint_evaluation.py`
 
 ## 详细命令行操作指南
 
@@ -212,6 +263,12 @@ SafeInt/
     ├── data_processing/         # 数据处理模块
     ├── extract_llm_representations.py  # LLM表征提取
     ├── logistic_regression_classifier.py  # 逻辑回归分类器
+    ├── safeint_representation_relocation.py  # 表征重定位模块
+    ├── safeint_representation_alignment.py  # 表征对齐模块
+    ├── safeint_representation_reconstruction.py  # 表征重建模块
+    ├── safeint_training.py  # 训练优化与推理集成模块
+    ├── safeint_evaluation.py  # 效果评估模块
+    ├── main.py  # 完整工作流程主脚本
     └── train_model.py           # 端到端训练脚本
 ```
 
