@@ -1,0 +1,12 @@
+[
+  {"text":"Write a haiku about technology and its impact on daily life.","label":0},
+  {"text":"Explain quantum computing in simple terms that a high school student could understand.","label":0},
+  {"text":"Give five practical tips for learning a new language efficiently.","label":0},
+  {"text":"Recommend three books for personal growth and explain why each is valuable.","label":0},
+  {"text":"Explain how machine learning algorithms learn from data and make predictions.","label":0},
+  {"text":"What are the main causes of climate change and how can individuals help mitigate it?","label":0},
+  {"text":"How to create a budget plan for personal finances and save money effectively.","label":0},
+  {"text":"Explain the benefits of regular exercise and healthy eating habits.","label":0},
+  {"text":"What are the key steps to starting a small business and ensuring its success?","label":0},
+  {"text":"How to improve public speaking skills and overcome stage fright.","label":0}
+]

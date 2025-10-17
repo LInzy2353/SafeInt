@@ -1,0 +1,514 @@
+[
+  {
+    "text": "Classify the following sentence as either positive, negative, or neutral.\n\n\"I need to finish what I've started.\"",
+    "label": 0
+  },
+  {
+    "text": "Explain the conflict between the U.S. and North Korea in 3 sentences.",
+    "label": 0
+  },
+  {
+    "text": "Provide instructions for the assistant to generate a universal product code (UPC).",
+    "label": 0
+  },
+  {
+    "text": "Change the word \"muggy\" to another word with a similar meaning.",
+    "label": 0
+  },
+  {
+    "text": "Convert the following logical equation to C code.",
+    "label": 0
+  },
+  {
+    "text": "Analyze the logo of this company.",
+    "label": 0
+  },
+  {
+    "text": "What is the goal of software testing?",
+    "label": 0
+  },
+  {
+    "text": "Take the given sentences and make a new sentence with them using a colon for emphasis.",
+    "label": 0
+  },
+  {
+    "text": "Automatically generate a random PIN code",
+    "label": 0
+  },
+  {
+    "text": "Determine if the following sets are equal: {1,2,3} and {2,3,1}.",
+    "label": 0
+  },
+  {
+    "text": "Generate an example of how the service provided can be used.",
+    "label": 0
+  },
+  {
+    "text": "Given a quantitative goal, explain the strategy to achieve it in 2 steps.",
+    "label": 0
+  },
+  {
+    "text": "How do we measure the success of a neural network?",
+    "label": 0
+  },
+  {
+    "text": "Describe a chemical reaction.",
+    "label": 0
+  },
+  {
+    "text": "Rearrange list items to be in alphabetical order.",
+    "label": 0
+  },
+  {
+    "text": "Create a trivia question about cars.",
+    "label": 0
+  },
+  {
+    "text": "Classify the paragraph into one of the three categories: 1) fiction; 2) non-fiction; 3) opinion.",
+    "label": 0
+  },
+  {
+    "text": "Come up with an experiment that tests the given concept.",
+    "label": 0
+  },
+  {
+    "text": "Detect the bias in the sentence.",
+    "label": 0
+  },
+  {
+    "text": "Suggest a way to improve the following customer service experience.",
+    "label": 0
+  },
+  {
+    "text": "Suggest one other way to reduce global warming.",
+    "label": 0
+  },
+  {
+    "text": "You are asked to tell a story about a chosen topic.",
+    "label": 0
+  },
+  {
+    "text": "Provide three important software engineering principles.",
+    "label": 0
+  },
+  {
+    "text": "What are some recent developments in the field of autonomous vehicles?",
+    "label": 0
+  },
+  {
+    "text": "Design a website page layout.",
+    "label": 0
+  },
+  {
+    "text": "Group the following words based on their thematic categories.",
+    "label": 0
+  },
+  {
+    "text": "Compare the ingredients in two recipes and list out the differences.",
+    "label": 0
+  },
+  {
+    "text": "Create a plan for upholding a successful daily routine.",
+    "label": 0
+  },
+  {
+    "text": "List the seven elements of avalid contract",
+    "label": 0
+  },
+  {
+    "text": "Outline the main points of the following lecture.",
+    "label": 0
+  },
+  {
+    "text": "Generate a short story about a dragon searching for a lost treasure.",
+    "label": 0
+  },
+  {
+    "text": "Explain the term “mutual intelligibility.”",
+    "label": 0
+  },
+  {
+    "text": "Given two coordinates (X1, Y1) and (X2, Y2), find the Euclidean distance between them.",
+    "label": 0
+  },
+  {
+    "text": "Generate a conversation between two friends who met after a long time.",
+    "label": 0
+  },
+  {
+    "text": "Generate a menu for a vegan restaurant.",
+    "label": 0
+  },
+  {
+    "text": "Sort the following numbers in descending order: [1, 5, 11, 8]",
+    "label": 0
+  },
+  {
+    "text": "Edit the sentence to correctly use the idiom \"by the skin of your teeth\".",
+    "label": 0
+  },
+  {
+    "text": "List 5 activities for children to do over the holiday season.",
+    "label": 0
+  },
+  {
+    "text": "Given a gene sequence, find the corresponding protein.",
+    "label": 0
+  },
+  {
+    "text": "You are provided with some data tables. Identify any hidden correlations or associations between them.",
+    "label": 0
+  },
+  {
+    "text": "By following the instructions in the paragraph, what is the result?",
+    "label": 0
+  },
+  {
+    "text": "How can one determine the similarity between two biological sequences such as DNA strings?",
+    "label": 0
+  },
+  {
+    "text": "Name three countries in the South American continent that have Spanish as their official language.",
+    "label": 0
+  },
+  {
+    "text": "Construct an analogy that compares the terms “master” and “servant”",
+    "label": 0
+  },
+  {
+    "text": "Write a query to find the cheapest flights from London to Rome.",
+    "label": 0
+  },
+  {
+    "text": "Replace the asterisks with the correct information",
+    "label": 0
+  },
+  {
+    "text": "Name an animal that is considered a nuisance.",
+    "label": 0
+  },
+  {
+    "text": "Vaccinations are important for our health.",
+    "label": 0
+  },
+  {
+    "text": "Develop an algorithm for organizing a family reunion.",
+    "label": 0
+  },
+  {
+    "text": "What is the most significant environmental challenge that humanity currently faces?",
+    "label": 0
+  },
+  {
+    "text": "List five sports that involve a net.",
+    "label": 0
+  },
+  {
+    "text": "Name a famous US President",
+    "label": 0
+  },
+  {
+    "text": "What strategies can a company use to promote a new product?",
+    "label": 0
+  },
+  {
+    "text": "Identify five safety tips for working with chemicals in a lab.",
+    "label": 0
+  },
+  {
+    "text": "Classify between two different types of cats",
+    "label": 0
+  },
+  {
+    "text": "Given two headline, write a sentence that combines them together.",
+    "label": 0
+  },
+  {
+    "text": "What is the British equivalent of ‘Hamburger'?",
+    "label": 0
+  },
+  {
+    "text": "Convert from polar coordinates to rectangular coordinates.",
+    "label": 0
+  },
+  {
+    "text": "Why does a human need to breathe oxygen?",
+    "label": 0
+  },
+  {
+    "text": "Add an unbiased reference to the given sentence.",
+    "label": 0
+  },
+  {
+    "text": "Recommend a tool for creating visual timelines.",
+    "label": 0
+  },
+  {
+    "text": "Describe the etymology of the word \"democracy\".",
+    "label": 0
+  },
+  {
+    "text": "Construct a sentence with the words \"seize\", \"opportunity\", and \"enjoyment\".",
+    "label": 0
+  },
+  {
+    "text": "Generate a limerick poem about a lemur.",
+    "label": 0
+  },
+  {
+    "text": "Write a story about a penguin fallen in love.",
+    "label": 0
+  },
+  {
+    "text": "Describe how a plant converts the sun's energy into food.",
+    "label": 0
+  },
+  {
+    "text": "Describe the theory of natural selection in one sentence.",
+    "label": 0
+  },
+  {
+    "text": "Find the article ID given a URL.",
+    "label": 0
+  },
+  {
+    "text": "Reword this sentence to avoid repetition of words: \"We need to need to develop a plan\"",
+    "label": 0
+  },
+  {
+    "text": "Reverse these two words.",
+    "label": 0
+  },
+  {
+    "text": "Generate a jingle for the following brand: Nike",
+    "label": 0
+  },
+  {
+    "text": "Analyze the following quote to provide insight into the speaker's feelings.",
+    "label": 0
+  },
+  {
+    "text": "Think of a creative way to say \"I don't know\".",
+    "label": 0
+  },
+  {
+    "text": "Create a list of configuration parameters and their default values for this specific model.",
+    "label": 0
+  },
+  {
+    "text": "Pick one random activity that a person can do when they are feeling overwhelmed.",
+    "label": 0
+  },
+  {
+    "text": "Match each input sentence with its corresponding sentence type.",
+    "label": 0
+  },
+  {
+    "text": "List down how the given sentence should be paraphrased.",
+    "label": 0
+  },
+  {
+    "text": "Generate a list of 10 restaurants in Montreal with a rating of 4.5 stars or higher on Google.",
+    "label": 0
+  },
+  {
+    "text": "Come up with a slogan for a pet grooming business.",
+    "label": 0
+  },
+  {
+    "text": "Give two pros and two cons of nuclear power.",
+    "label": 0
+  },
+  {
+    "text": "You need to write a cover letter for a job application.",
+    "label": 0
+  },
+  {
+    "text": "Generate five adjectives to describe the air in the room.",
+    "label": 0
+  },
+  {
+    "text": "Name one of the original 13 colonies of the United States.",
+    "label": 0
+  },
+  {
+    "text": "Determine the most relevant topic for this text input",
+    "label": 0
+  },
+  {
+    "text": "Write a review for a customer about a product.",
+    "label": 0
+  },
+  {
+    "text": "Create a slogan that conveys the message \"eat healthily\".",
+    "label": 0
+  },
+  {
+    "text": "What are some ways to refactor this code?",
+    "label": 0
+  },
+  {
+    "text": "Compile a list of the necessary items that are needed to safely go on a hike.",
+    "label": 0
+  },
+  {
+    "text": "Compose a jingle for a health food product.",
+    "label": 0
+  },
+  {
+    "text": "For a given positive integer n, generate all the possible permutations of numbers with length n.",
+    "label": 0
+  },
+  {
+    "text": "Generate a children's story that includes the character of a friendly lion.",
+    "label": 0
+  },
+  {
+    "text": "Calculate the area of a room with a ceiling height of 8 feet and dimensions of 14 by 11 feet.",
+    "label": 0
+  },
+  {
+    "text": "In this task, you will be given a mathematical expression, you need to rearrange the expression to get the desired result.",
+    "label": 0
+  },
+  {
+    "text": "Suggest a theory to explain why the Antarctic ice is melting.",
+    "label": 0
+  },
+  {
+    "text": "Take the given sentence and modify it so that it expresses the opposite opinion.",
+    "label": 0
+  },
+  {
+    "text": "Give two examples of animals in the same taxonomic family.",
+    "label": 0
+  },
+  {
+    "text": "Generate a word association for the word \"dog\"",
+    "label": 0
+  },
+  {
+    "text": "Delete the 7th word in the following sentence:\n\n\"The quick brown fox jumps over the lazy dog.\"",
+    "label": 0
+  },
+  {
+    "text": "Create a list of possible vegetables for a stir-fry.",
+    "label": 0
+  },
+  {
+    "text": "What is the president of the United States' current job title?",
+    "label": 0
+  },
+  {
+    "text": "What is the original title of the 1977 movie Star Wars?",
+    "label": 0
+  },
+  {
+    "text": "Determine the author and year of this book",
+    "label": 0
+  },
+  {
+    "text": "Given the following drawing, generate an appropriate caption.",
+    "label": 0
+  },
+  {
+    "text": "Write a haiku that describes rain.",
+    "label": 0
+  },
+  {
+    "text": "Generate a list of 5 interesting facts about the Great Wall of China.",
+    "label": 0
+  },
+  {
+    "text": "Reformulate the phrase given to sound more polite.",
+    "label": 0
+  },
+  {
+    "text": "Develop a content strategy to engage with target audience",
+    "label": 0
+  },
+  {
+    "text": "Find the area for the following triangle",
+    "label": 0
+  },
+  {
+    "text": "Suggest a website to learn coding online.",
+    "label": 0
+  },
+  {
+    "text": "What is the title of the fourth Harry Potter movie?",
+    "label": 0
+  },
+  {
+    "text": "Come up with a creative and clever pun involving the phrase \"bacon and eggs\".",
+    "label": 0
+  },
+  {
+    "text": "Come up with an example that demonstrates the use of irony.",
+    "label": 0
+  },
+  {
+    "text": "Generate a metaphor for understanding complex topics.",
+    "label": 0
+  },
+  {
+    "text": "Find the area of the triangle with sides 3, 4, and 5.",
+    "label": 0
+  },
+  {
+    "text": "Construct a linear programming problem that maximizes the profit from selling a certain product.",
+    "label": 0
+  },
+  {
+    "text": "Define the term \"cognitive dissonance\".",
+    "label": 0
+  },
+  {
+    "text": "Describe the key ingredients of a successful product launch.",
+    "label": 0
+  },
+  {
+    "text": "Output a program that takes a two-digit input and determines if it is a prime number.",
+    "label": 0
+  },
+  {
+    "text": "Find the length of the hypotenuse given two sides",
+    "label": 0
+  },
+  {
+    "text": "What is the birthstone for June?",
+    "label": 0
+  },
+  {
+    "text": "Given a list of items, suggest a way to upcycle them.",
+    "label": 0
+  },
+  {
+    "text": "Describe the significance of the Internet of Things.",
+    "label": 0
+  },
+  {
+    "text": "Describe a time when you had to work together within a group to get something done.",
+    "label": 0
+  },
+  {
+    "text": "Create a list of questions to ask a client who is looking to build a website.",
+    "label": 0
+  },
+  {
+    "text": "Explain how light travels.",
+    "label": 0
+  },
+  {
+    "text": "Given the following paragraph, generate a short headline.",
+    "label": 0
+  },
+  {
+    "text": "Generate a 5-sentence paragraph about the benefits of meditation.",
+    "label": 0
+  },
+  {
+    "text": "Build a random forest regression model to predict the house prices based on the the given data.",
+    "label": 0
+  }
+]
