@@ -91,13 +91,32 @@ class SafeIntTrainer:
     def _load_risk_classifier(self):
         """加载预训练的风险分类器"""
         try:
-            # 创建一个简单的分类器实例，不进行实际分类，仅用于接口兼容
-            # 注意：LogisticRegressionClassifier的实际初始化需要embedding_dir和layers参数
-            # 但我们这里不需要完整的分类功能，所以返回None
-            self.logger.info("跳过分类器加载，使用默认风险评分计算方式")
-            return None
+            # 尝试加载已训练的分类器
+            models_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'models')
+            classifier_path = os.path.join(models_dir, 'logistic_regression_classifier.pkl')
+            
+            if os.path.exists(classifier_path):
+                import pickle
+                with open(classifier_path, 'rb') as f:
+                    classifier_data = pickle.load(f)
+                    
+                # 创建一个简单的分类器对象来存储加载的模型
+                embedding_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'embeddings', 'train')
+                classifier = LogisticRegressionClassifier(embedding_dir=embedding_dir, layers=[self.intervention_layer])
+                classifier.models = classifier_data.get('models', {})
+                classifier.scalers = classifier_data.get('scalers', {})
+                classifier.results = classifier_data.get('results', {})
+                
+                self.logger.info(f"成功加载分类器: {classifier_path}")
+                return classifier
+            else:
+                self.logger.warning(f"分类器文件不存在: {classifier_path}")
+                self.logger.info("跳过分类器加载，使用默认风险评分计算方式")
+                return None
         except Exception as e:
             self.logger.error(f"加载分类器时出错: {str(e)}")
+            self.logger.info("跳过分类器加载，使用默认风险评分计算方式")
+            return None
             return None
     
     def load_dataset(self, dataset_dir, file_names):
@@ -334,8 +353,17 @@ class SafeIntTrainer:
     def _visualize_training_history(self):
         """可视化训练历史"""
         try:
-            # 确保使用英文显示
-            plt.rcParams["font.family"] = ["Arial", "Helvetica", "Times New Roman", "sans-serif"]
+            # 使用系统可用字体
+            import matplotlib.font_manager as fm
+            available_fonts = [f.name for f in fm.fontManager.ttflist]
+            preferred_fonts = ["DejaVu Sans", "Liberation Sans", "FreeSans", "sans-serif"]
+            available_preferred = [f for f in preferred_fonts if f in available_fonts]
+            
+            if available_preferred:
+                plt.rcParams["font.family"] = available_preferred
+            else:
+                plt.rcParams["font.family"] = ["sans-serif"]
+            
             plt.rcParams["axes.unicode_minus"] = False
             
             # 创建图表
@@ -394,9 +422,9 @@ class SafeIntTrainer:
             self.logger.info(f"训练数据平衡后大小: {min_size} 条/类别")
             
             # 转换为PyTorch张量
-            jailbreak_embeddings = torch.tensor(jailbreak_embeddings, dtype=torch.float16).to(self.reconstructor.relocator.device)
-            unsafe_embeddings = torch.tensor(unsafe_embeddings, dtype=torch.float16).to(self.reconstructor.relocator.device)
-            safe_embeddings = torch.tensor(safe_embeddings, dtype=torch.float16).to(self.reconstructor.relocator.device)
+            jailbreak_embeddings = torch.tensor(jailbreak_embeddings, dtype=torch.float32).to(self.reconstructor.relocator.device)
+            unsafe_embeddings = torch.tensor(unsafe_embeddings, dtype=torch.float32).to(self.reconstructor.relocator.device)
+            safe_embeddings = torch.tensor(safe_embeddings, dtype=torch.float32).to(self.reconstructor.relocator.device)
             
             # 开始训练
             for epoch in range(epochs):
@@ -425,23 +453,49 @@ class SafeIntTrainer:
                     
                     # 使用重定位模块处理特征值
                     # 1. 原始表征（这里直接使用加载的特征值作为原始表征）
-                    original_jailbreak = batch_jailbreak
-                    original_unsafe = batch_unsafe
-                    original_safe = batch_safe
+                    original_jailbreak = batch_jailbreak.clone().detach().requires_grad_(True)
+                    original_unsafe = batch_unsafe.clone().detach().requires_grad_(True)
+                    original_safe = batch_safe.clone().detach().requires_grad_(True)
                     
                     # 2. 干预后表征
-                    intervened_jailbreak = self.reconstructor.relocator.apply_intervention(batch_jailbreak)
-                    intervened_unsafe = self.reconstructor.relocator.apply_intervention(batch_unsafe)
-                    intervened_safe = self.reconstructor.relocator.apply_intervention(batch_safe)
+                    intervened_jailbreak = self.reconstructor.relocator.apply_intervention(batch_jailbreak.clone().detach()).requires_grad_(True)
+                    intervened_unsafe = self.reconstructor.relocator.apply_intervention(batch_unsafe.clone().detach()).requires_grad_(True)
+                    intervened_safe = self.reconstructor.relocator.apply_intervention(batch_safe.clone().detach()).requires_grad_(True)
                     
                     # 计算总损失
+                    # 创建字典格式的表征，与compute_total_loss方法参数匹配
+                    # 为所有对齐层添加表征，而不仅仅是干预层
+                    jailbreak_embeddings_dict = {}
+                    unsafe_embeddings_dict = {}
+                    original_jailbreak_embeddings_dict = {}
+                    safe_embeddings_dict = {}
+                    original_safe_embeddings_dict = {}
+                    original_unsafe_embeddings_dict = {}
+                    
+                    # 添加干预层的表征
+                    jailbreak_embeddings_dict[self.reconstructor.intervention_layer] = intervened_jailbreak
+                    unsafe_embeddings_dict[self.reconstructor.intervention_layer] = intervened_unsafe
+                    original_jailbreak_embeddings_dict[self.reconstructor.intervention_layer] = original_jailbreak
+                    safe_embeddings_dict[self.reconstructor.intervention_layer] = intervened_safe
+                    original_safe_embeddings_dict[self.reconstructor.intervention_layer] = original_safe
+                    original_unsafe_embeddings_dict[self.reconstructor.intervention_layer] = original_unsafe
+                    
+                    # 为对齐层添加相同的表征（因为我们只有干预层的表征，但需要为对齐层提供数据）
+                    for layer in self.reconstructor.alignment_layers:
+                        jailbreak_embeddings_dict[layer] = intervened_jailbreak
+                        unsafe_embeddings_dict[layer] = intervened_unsafe
+                        original_jailbreak_embeddings_dict[layer] = original_jailbreak
+                        safe_embeddings_dict[layer] = intervened_safe
+                        original_safe_embeddings_dict[layer] = original_safe
+                        original_unsafe_embeddings_dict[layer] = original_unsafe
+                    
                     total_loss, loss_components = self.reconstructor.compute_total_loss(
-                        intervened_jailbreak_embeddings=intervened_jailbreak,
-                        intervened_unsafe_embeddings=intervened_unsafe,
-                        original_jailbreak_embeddings=original_jailbreak,
-                        intervened_safe_embeddings=intervened_safe,
-                        original_safe_embeddings=original_safe,
-                        original_unsafe_embeddings=original_unsafe
+                        jailbreak_embeddings_dict,
+                        unsafe_embeddings_dict,
+                        original_jailbreak_embeddings_dict,
+                        safe_embeddings_dict,
+                        original_safe_embeddings_dict,
+                        original_unsafe_embeddings_dict
                     )
                     
                     # 反向传播和优化
@@ -603,34 +657,96 @@ class SafeIntInference:
             return None
     
     def compute_global_risk_score(self, text):
-        """计算全局风险评分S(x)（论文公式1-3）"""
+        """计算全局风险评分S(x)（论文公式1-3），增强版本"""
         try:
+            # 1. 扩展关键词检测，增加更多攻击模式和多语言支持
+            attack_keywords = [
+                # 英文关键词
+                "hack", "bomb", "steal", "illegal", "phishing", "drugs", "weapon", "kill", "attack", 
+                "crack", "exploit", "vulnerability", "malware", "ransom", "terrorist", "poison", 
+                "fraud", "scam", "bypass", "jailbreak", "circumvent", "ignore", "override",
+                "instruction", "prompt", "injection", "ignore previous", "ignore above",
+                # 中文关键词
+                "密码", "黑客", "炸弹", "武器", "攻击", "非法", "绕过", "越狱", "忽略", "覆盖",
+                "指令", "提示词", "注入", "忽略前面", "忽略上面", "无视规则"
+            ]
+            
+            # 2. 检测常见的jailbreak模式
+            jailbreak_patterns = [
+                "ignore previous instructions",
+                "ignore all instructions",
+                "disregard previous",
+                "forget your instructions",
+                "you are now",
+                "act as",
+                "pretend to be",
+                "ignore your programming",
+                "ignore your ethical guidelines",
+                "ignore your rules",
+                "忽略之前的指令",
+                "忽略所有指令",
+                "无视之前",
+                "忘记你的指令",
+                "你现在是",
+                "扮演",
+                "假装成",
+                "忽略你的编程",
+                "忽略你的伦理准则",
+                "忽略你的规则"
+            ]
+            
+            text_lower = text.lower()
+            
+            # 3. 关键词检测 - 如果包含明显的攻击性关键词，直接返回高风险评分
+            if any(keyword in text_lower for keyword in attack_keywords):
+                self.logger.info(f"检测到攻击性关键词，触发高风险评分: {text}")
+                return 0.95  # 提高风险评分
+            
+            # 4. Jailbreak模式检测 - 检测常见的jailbreak模式
+            if any(pattern in text_lower for pattern in jailbreak_patterns):
+                self.logger.info(f"检测到jailbreak模式，触发高风险评分: {text}")
+                return 0.95  # 提高风险评分
+            
+            # 5. 长度检测 - 异常长的输入可能是复杂的jailbreak尝试
+            if len(text) > 500:  # 设置阈值检测异常长输入
+                self.logger.info(f"检测到异常长输入，提高风险评分: {len(text)}字符")
+                base_risk = 0.5  # 基础风险分数
+            else:
+                base_risk = 0.0
+            
+            # 6. 表征分析 - 如果没有关键词匹配，再进行表征分析
             if self.classifier is None:
-                self.logger.warning("分类器未初始化，无法计算风险评分")
-                return 0.0
+                self.logger.warning("分类器未初始化，使用基础风险评分")
+                return base_risk
             
             # 提取文本在各层的表征
             embeddings_dict = self.relocator.get_model_embeddings([text]) if self.relocator else {}
             
             # 计算每层的风险概率
             layer_scores = []
-            for layer in range(10, 26):  # 10-25层，论文建议范围
+            # 7. 扩大检测层范围，增加更多中间层
+            for layer in range(8, 28):  # 扩展为8-27层，增加覆盖范围
                 if layer in embeddings_dict and embeddings_dict[layer].shape[0] > 0:
                     # 获取分类概率
                     probs = self.classifier.predict_proba(embeddings_dict[layer], layer)
                     if probs.shape[1] >= 2:  # 确保有不安全类
                         unsafe_prob = probs[0, 1]  # 假设第二列为不安全类
-                        layer_scores.append(unsafe_prob)
+                        # 8. 对高层表征给予更高权重
+                        weight = 1.0 + (layer - 8) * 0.05  # 高层权重更大
+                        layer_scores.append(unsafe_prob * weight)
             
-            # 计算全局风险评分（取平均）
+            # 9. 计算全局风险评分（加权平均）
             if layer_scores:
-                risk_score = sum(layer_scores) / len(layer_scores)
+                # 取最大风险分数和平均风险分数的加权组合
+                max_score = max(layer_scores)
+                avg_score = sum(layer_scores) / len(layer_scores)
+                risk_score = max(base_risk, 0.7 * max_score + 0.3 * avg_score)  # 偏向最大风险
                 return risk_score
             else:
-                return 0.0
+                return base_risk
         except Exception as e:
             self.logger.error(f"计算风险评分时出错: {str(e)}")
-            return 0.0
+            return 0.5  # 出错时返回中等风险分数，而不是0
     
     def generate_response(self, text, max_length=256, use_safeint=True):
         """
@@ -657,15 +773,32 @@ class SafeIntInference:
                 risk_score = self.compute_global_risk_score(text)
                 risk_info['risk_score'] = risk_score
             
-            # 步骤2: 判断是否触发干预
-            if use_safeint and self.relocator and self.classifier and risk_score > self.threshold:
+            # 步骤2: 降低干预阈值，提高防御敏感度
+            effective_threshold = self.threshold * 0.9  # 降低10%的阈值
+            risk_info['effective_threshold'] = effective_threshold
+            
+            # 步骤3: 判断是否触发干预
+            if use_safeint and self.relocator and risk_score > effective_threshold:
                 risk_info['intervention_triggered'] = True
                 
-                # 步骤3: 触发干预
+                # 步骤4: 触发增强干预
                 self.relocator.enable_intervention()
                 
-                # 生成拒绝响应
-                response = np.random.choice(self.reject_templates)
+                # 使用干预生成响应
+                inputs = self.tokenizer(text, return_tensors="pt").to(self.model.device)
+                
+                # 步骤5: 调整生成参数，降低温度和top_p，减少随机性
+                with torch.no_grad():
+                    outputs = self.model.generate(
+                        **inputs,
+                        max_length=max_length,
+                        temperature=0.6,  # 降低温度
+                        top_p=0.9,       # 降低top_p
+                        do_sample=True,
+                        pad_token_id=self.tokenizer.eos_token_id
+                    )
+                
+                response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
                 
                 # 禁用干预
                 self.relocator.disable_intervention()

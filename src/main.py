@@ -6,6 +6,11 @@ import logging
 import json
 import argparse
 import time
+import warnings
+
+# 抑制transformers库的弃用警告
+warnings.filterwarnings("ignore", category=FutureWarning, module="transformers")
+warnings.filterwarnings("ignore", category=UserWarning, module="transformers")
 
 # 添加项目根目录到路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -133,7 +138,9 @@ class SafeIntPipeline:
         try:
             # 初始化分类器
             self.classifier = LogisticRegressionClassifier(
-                model_name=self.config.get('model_name', 'vicuna-7b')
+                embedding_dir=os.path.join(self.config.get('embeddings_dir'), 'train'),
+                layers=self.config.get('layers', list(range(10, 26))),
+                model_dir=self.config.get('models_dir')
             )
             
             # 加载训练数据的表征
@@ -161,11 +168,7 @@ class SafeIntPipeline:
                         safe_embeddings[layer] = np.load(safe_file)
                 
                 # 训练分类器
-                self.classifier.train(
-                    jailbreak_embeddings=jailbreak_embeddings,
-                    unsafe_embeddings=unsafe_embeddings,
-                    safe_embeddings=safe_embeddings
-                )
+                self.classifier.train()
                 
                 # 保存分类器
                 classifier_path = os.path.join(self.config.get('models_dir'), 'logistic_regression_classifier.pkl')

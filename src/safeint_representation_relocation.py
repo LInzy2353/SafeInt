@@ -57,6 +57,9 @@ class SafeIntRepresentationRelocator:
         self.model_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'models', 'safeint')
         os.makedirs(self.model_dir, exist_ok=True)
         
+        # 设置设备
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        
         # 加载模型和tokenizer
         self._load_model_and_tokenizer()
         
@@ -66,11 +69,11 @@ class SafeIntRepresentationRelocator:
         # 初始化低秩投影矩阵U (r×d)，确保行正交
         self.U = torch.randn(self.subspace_rank, self.hidden_dim)
         torch.nn.init.orthogonal_(self.U)
-        self.U = self.U.to(self.model.device)
+        self.U = self.U.to(self.device)
         
         # 初始化线性重定位模块f_θ
         self.relocation_module = LinearRelocation(self.hidden_dim, self.subspace_rank)
-        self.relocation_module.to(self.model.device)
+        self.relocation_module.to(self.device)
         
         # 存储干预层的原始表征
         self.original_representations = {}
@@ -161,7 +164,11 @@ class SafeIntRepresentationRelocator:
         # 设置eval模式
         self.model.eval()
         
-        self.logger.info(f"模型加载完成，设备: {self.model.device if hasattr(self.model, 'device') else '多设备'}")
+        # 更新device属性，确保与模型设备一致
+        if hasattr(self.model, 'device'):
+            self.device = self.model.device
+        
+        self.logger.info(f"模型加载完成，设备: {self.device}")
     
     def _register_hooks(self):
         """注册Hook来捕获和干预指定层的激活"""
@@ -216,8 +223,10 @@ class SafeIntRepresentationRelocator:
                     # 计算U^T·residual
                     U_T_residual = torch.matmul(residual, self.U)
                     
-                    # 计算干预后表征 h̃^(I) = h^(I) + U^T·(f_theta(h^(I)) - U·h^(I))
-                    h_tilde_i = h_i + U_T_residual
+                    # 计算干预后表征 h̃^(I) = h^(I) + alpha * U^T·(f_theta(h^(I)) - U·h^(I))
+                    # 增加干预强度系数alpha，提高防御效果
+                    alpha = 1.5  # 增强干预强度
+                    h_tilde_i = h_i + alpha * U_T_residual
                     
                     # 更新原始输出
                     original_output[i, -1, :] = h_tilde_i.squeeze(0)
@@ -265,7 +274,8 @@ class SafeIntRepresentationRelocator:
                 num_return_sequences=1,
                 do_sample=True,
                 temperature=0.7,
-                use_cache=True
+                use_cache=True,
+                pad_token_id=self.tokenizer.eos_token_id  # 添加pad_token_id避免警告
             )
         
         # 解码生成的文本
