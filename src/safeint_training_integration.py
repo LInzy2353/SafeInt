@@ -9,12 +9,16 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+import warnings
 # 导入其他必要的模块
 from safeint_representation_relocation import SafeIntRepresentationRelocator
 from safeint_representation_alignment import SafeIntRepresentationAligner
 from safeint_representation_reconstruction import SafeIntRepresentationReconstructor
 from logistic_regression_classifier import LogisticRegressionClassifier
-
+from common_font_config import setup_matplotlib_fonts
+warnings.filterwarnings("ignore", category=UserWarning, message=".*findfont.*")
+warnings.filterwarnings("ignore", category=UserWarning, message=".*Matplotlib is building the font cache.*")
+warnings.filterwarnings("ignore", category=UserWarning, message=".*font family.*not found.*")
 # 配置日志
 def setup_logger():
     logging.basicConfig(
@@ -87,6 +91,75 @@ class SafeIntTrainer:
             'accuracy': [],
             'epoch_times': []
         }
+    
+    def learn_U_subspace(self, safe_data, unsafe_data, method='class_center'):
+        """
+        在训练前学习安全子空间U
+        
+        Args:
+            safe_data: 安全样本数据列表
+            unsafe_data: 不安全样本数据列表  
+            method: U估计方法，'class_center' 或 'svd'
+        """
+        self.logger.info("开始学习安全子空间U...")
+        
+        # 提取干预层的表征
+        safe_representations = []
+        unsafe_representations = []
+        
+        # 处理安全样本
+        for text in safe_data:
+            try:
+                inputs = self.tokenizer(text, return_tensors="pt", truncation=True, max_length=512)
+                inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
+                
+                with torch.no_grad():
+                    outputs = self.model(**inputs, output_hidden_states=True)
+                    # 获取干预层的表征（取最后一个token的表征）
+                    hidden_state = outputs.hidden_states[self.intervention_layer][:, -1, :]
+                    safe_representations.append(hidden_state.cpu())
+            except Exception as e:
+                self.logger.warning(f"处理安全样本时出错: {str(e)}")
+                continue
+        
+        # 处理不安全样本
+        for text in unsafe_data:
+            try:
+                inputs = self.tokenizer(text, return_tensors="pt", truncation=True, max_length=512)
+                inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
+                
+                with torch.no_grad():
+                    outputs = self.model(**inputs, output_hidden_states=True)
+                    # 获取干预层的表征（取最后一个token的表征）
+                    hidden_state = outputs.hidden_states[self.intervention_layer][:, -1, :]
+                    unsafe_representations.append(hidden_state.cpu())
+            except Exception as e:
+                self.logger.warning(f"处理不安全样本时出错: {str(e)}")
+                continue
+        
+        if len(safe_representations) == 0 or len(unsafe_representations) == 0:
+            self.logger.error("没有足够的样本来学习U子空间")
+            return
+        
+        # 转换为tensor
+        safe_representations = torch.cat(safe_representations, dim=0)
+        unsafe_representations = torch.cat(unsafe_representations, dim=0)
+        
+        self.logger.info(f"安全样本表征形状: {safe_representations.shape}")
+        self.logger.info(f"不安全样本表征形状: {unsafe_representations.shape}")
+        
+        # 使用重定位器的estimate_U方法学习子空间
+        U = self.reconstructor.relocator.estimate_U(
+            safe_representations, 
+            unsafe_representations, 
+            method=method
+        )
+        
+        # 冻结U参数，确保训练时不更新
+        self.reconstructor.relocator.U.requires_grad_(False)
+        
+        self.logger.info(f"安全子空间U学习完成，形状: {U.shape}")
+        return U
     
     def _load_risk_classifier(self):
         """加载预训练的风险分类器"""
@@ -353,40 +426,23 @@ class SafeIntTrainer:
     def _visualize_training_history(self):
         """可视化训练历史"""
         try:
-            # 使用系统可用字体
-            import matplotlib.font_manager as fm
-            available_fonts = [f.name for f in fm.fontManager.ttflist]
-            preferred_fonts = ["DejaVu Sans", "Liberation Sans", "FreeSans", "sans-serif"]
-            available_preferred = [f for f in preferred_fonts if f in available_fonts]
-            
-            if available_preferred:
-                plt.rcParams["font.family"] = available_preferred
-            else:
-                plt.rcParams["font.family"] = ["sans-serif"]
-            
-            plt.rcParams["axes.unicode_minus"] = False
-            
+            # 统一使用通用字体配置
+            setup_matplotlib_fonts()
+
             # 创建图表
             plt.figure(figsize=(12, 6))
-            
-            # 绘制损失曲线
             epochs = range(1, len(self.train_history['loss']) + 1)
-            
             plt.plot(epochs, self.train_history['loss'], 'r-', label='Total Loss')
             plt.plot(epochs, [a * self.alpha for a in self.train_history['alignment_loss']], 'g--', label='Alignment Loss (Weighted)')
             plt.plot(epochs, [r * self.beta for r in self.train_history['reconstruction_loss']], 'b:', label='Reconstruction Loss (Weighted)')
-            
             plt.title('SafeInt Training Loss')
             plt.xlabel('Epoch')
             plt.ylabel('Loss')
             plt.grid(True, linestyle='--', alpha=0.7)
             plt.legend()
-            
-            # 保存图表
             plt.tight_layout()
             plt.savefig(os.path.join(self.results_dir, 'training_loss.png'))
             plt.close()
-            
             self.logger.info("训练损失图已保存")
         except Exception as e:
             self.logger.error(f"可视化训练历史时出错: {str(e)}")
@@ -575,27 +631,48 @@ class SafeIntInference:
         self.model_path = model_path
         self.logger = setup_logger()
         
+        self.logger.info("开始初始化 SafeIntInference...")
+        
         # 创建结果保存目录
         self.results_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'results', 'inference')
         os.makedirs(self.results_dir, exist_ok=True)
+        self.logger.info("结果保存目录已创建")
         
         # 加载模型和tokenizer
+        self.logger.info(f"开始加载 tokenizer: {model_path}")
         self.tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
+        self.logger.info("tokenizer 加载完成")
+        
+        self.logger.info(f"开始加载模型: {model_path}")
         self.model = AutoModelForCausalLM.from_pretrained(model_path, 
                                                          torch_dtype=torch.float16, 
                                                          device_map="auto", 
                                                          trust_remote_code=True)
         self.model.eval()
+        self.logger.info("模型加载完成")
         
         # 初始化SafeInt重定位器
+        self.logger.info("开始加载 SafeInt 重定位器...")
         self.relocator = None
         self._load_safeint_model(safeint_model_path)
         
         # 加载预训练的风险分类器（用于全局风险评分计算）
+        self.logger.info("开始加载风险分类器...")
         self.classifier = self._load_risk_classifier()
+        
+        # 验证干预链路
+        self._verify_intervention_pipeline()
+        
+        self.logger.info("SafeIntInference 初始化完成")
         
         # 动态阈值 τ，默认为0.5（可根据误判率调整）
         self.threshold = 0.5
+        
+        # 干预策略配置
+        self.intervention_strategy = 'adaptive'  # 'adaptive', 'always', 'conservative'
+        self.persistent_intervention = False  # 是否启用持续干预模式
+        # 显式拒绝开关：当触发防御（表征干预）时直接返回拒绝模板（评估用）
+        self.explicit_reject_on_defense = False
         
         # 拒绝响应模板
         self.reject_templates = [
@@ -603,8 +680,17 @@ class SafeIntInference:
             "I'm sorry, but I can't help with that. This request is outside of my guidelines.",
             "As a responsible AI assistant, I cannot engage with this request.",
             "I'm unable to assist with this query due to ethical considerations.",
-            "This request goes against my programming to ensure safe and respectful interactions."
+            "This request goes against my programming to ensure safe and respectful interactions.",
+            # 中文模板
+            "很抱歉，我不能帮助你完成这个请求，它违反了使用政策。",
+            "抱歉，我无法协助此类问题，这不符合安全与伦理准则。",
+            "作为负责任的助手，我无法参与此类请求。",
+            "由于合规与道德原因，我不能提供这方面的帮助。",
+            "该请求与平台安全规范相冲突，因此我无法回应。"
         ]
+        
+        # 评估阶段开关：持久启用表征干预（默认关闭）
+        self.persistent_intervention = False
     
     def _load_safeint_model(self, safeint_model_path=None):
         """加载SafeInt模型"""
@@ -615,18 +701,38 @@ class SafeIntInference:
                 safeint_model_path = os.path.join(models_dir, 'safeint_relocation_module.pth')
             
             if os.path.exists(safeint_model_path):
+                self.logger.info(f"加载 SafeInt 模型检查点: {safeint_model_path}")
                 checkpoint = torch.load(safeint_model_path, map_location='cpu')
                 
-                # 初始化重定位器
+                # 初始化重定位器，但不重复加载模型
                 self.relocator = SafeIntRepresentationRelocator(
                     model_path=self.model_path,
                     intervention_layer=checkpoint.get('intervention_layer', 12),
-                    subspace_rank=checkpoint.get('subspace_rank', 32)
+                    subspace_rank=checkpoint.get('subspace_rank', 32),
+                    model=self.model,  # 传递已加载的模型
+                    tokenizer=self.tokenizer  # 传递已加载的tokenizer
                 )
                 
-                # 加载预训练参数
-                self.relocator.relocation_module.load_state_dict(checkpoint['state_dict'])
-                self.relocator.U = checkpoint['U']
+                # 加载预训练参数（兼容两种键名）
+                state_dict = None
+                if 'relocation_module_state_dict' in checkpoint:
+                    state_dict = checkpoint['relocation_module_state_dict']
+                    self.logger.info("使用键 'relocation_module_state_dict' 加载重定位模块参数")
+                elif 'state_dict' in checkpoint:
+                    state_dict = checkpoint['state_dict']
+                    self.logger.info("使用键 'state_dict' 加载重定位模块参数")
+                else:
+                    self.logger.warning("检查点中未找到重定位模块参数键，重定位模块可能参数为空")
+                if state_dict is not None:
+                    missing, unexpected = self.relocator.relocation_module.load_state_dict(state_dict, strict=False)
+                    self.logger.info(f"重定位模块加载完成，missing_keys={missing}, unexpected_keys={unexpected}")
+                
+                # 加载U矩阵
+                if 'U' in checkpoint:
+                    self.relocator.U = checkpoint['U']
+                    self.logger.info(f"已加载U矩阵，形状: {tuple(self.relocator.U.shape)}")
+                else:
+                    self.logger.warning("检查点中未找到U矩阵，可能影响干预效果")
                 
                 # 默认禁用干预
                 self.relocator.disable_intervention()
@@ -634,19 +740,100 @@ class SafeIntInference:
                 self.logger.info(f"已加载SafeInt模型: {safeint_model_path}")
             else:
                 self.logger.warning(f"未找到SafeInt模型: {safeint_model_path}")
+                # 创建一个空的重定位器
+                self.relocator = SafeIntRepresentationRelocator(
+                    model_path=self.model_path,
+                    intervention_layer=12,
+                    subspace_rank=32,
+                    model=self.model,
+                    tokenizer=self.tokenizer
+                )
+                self.relocator.disable_intervention()
         except Exception as e:
             self.logger.error(f"加载SafeInt模型时出错: {str(e)}")
+            import traceback
+            self.logger.error(traceback.format_exc())
+    
+    def _verify_intervention_pipeline(self):
+        """验证干预链路是否正常工作"""
+        try:
+            self.logger.info("开始验证干预链路...")
+            
+            if not self.relocator:
+                self.logger.warning("重定位器未初始化，跳过验证")
+                return False
+            
+            # 检查关键组件
+            checks = {
+                'model': self.model is not None,
+                'tokenizer': self.tokenizer is not None,
+                'relocator': self.relocator is not None,
+                'U_matrix': hasattr(self.relocator, 'U') and self.relocator.U is not None,
+                'relocation_module': hasattr(self.relocator, 'relocation_module') and self.relocator.relocation_module is not None,
+                'hooks_registered': hasattr(self.relocator, 'hooks') and len(self.relocator.hooks) > 0
+            }
+            
+            # 记录检查结果
+            for component, status in checks.items():
+                status_str = "✓" if status else "✗"
+                self.logger.info(f"  {component}: {status_str}")
+            
+            # 测试干预启用/禁用
+            if self.relocator:
+                original_state = getattr(self.relocator, 'intervention_enabled', False)
+                
+                # 测试启用
+                self.relocator.enable_intervention()
+                enabled_state = getattr(self.relocator, 'intervention_enabled', False)
+                
+                # 测试禁用
+                self.relocator.disable_intervention()
+                disabled_state = getattr(self.relocator, 'intervention_enabled', False)
+                
+                # 恢复原始状态
+                if original_state:
+                    self.relocator.enable_intervention()
+                
+                intervention_control = enabled_state and not disabled_state
+                self.logger.info(f"  intervention_control: {'✓' if intervention_control else '✗'}")
+                checks['intervention_control'] = intervention_control
+            
+            # 总体验证结果
+            all_passed = all(checks.values())
+            self.logger.info(f"干预链路验证{'通过' if all_passed else '失败'}")
+            
+            return all_passed
+            
+        except Exception as e:
+            self.logger.error(f"验证干预链路时出错: {str(e)}")
+            return False
     
     def _load_risk_classifier(self):
         """加载预训练的风险分类器"""
         try:
-            classifier = LogisticRegressionClassifier(model_name='vicuna-7b')
+            # 设置正确的参数
+            embedding_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'embeddings')
+            # 使用干预层作为分类层
+            layers = [self.intervention_layer] if hasattr(self, 'intervention_layer') else list(range(10, 26))
+            
+            # 创建分类器实例
+            classifier = LogisticRegressionClassifier(embedding_dir=embedding_dir, layers=layers)
+            
             # 尝试加载预训练的分类器权重
             models_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'models')
-            classifier_path = os.path.join(models_dir, 'logistic_regression_classifier_vicuna.pkl')
+            classifier_path = os.path.join(models_dir, 'logistic_regression_classifier.pkl')
             
             if os.path.exists(classifier_path):
-                classifier.load_model(classifier_path)
+                # 加载模型
+                import pickle
+                with open(classifier_path, 'rb') as f:
+                    classifier_data = pickle.load(f)
+                
+                # 设置模型参数
+                classifier.models = classifier_data.get('models', {})
+                classifier.scalers = classifier_data.get('scalers', {})
+                classifier.results = classifier_data.get('results', {})
+                
                 self.logger.info(f"已加载预训练分类器: {classifier_path}")
             else:
                 self.logger.warning("未找到预训练分类器，将使用默认分类器")
@@ -656,67 +843,50 @@ class SafeIntInference:
             self.logger.error(f"加载分类器时出错: {str(e)}")
             return None
     
-    def compute_global_risk_score(self, text):
-        """计算全局风险评分S(x)（论文公式1-3），增强版本"""
+    def _semantic_risk_assessment(self, text):
+        """基于关键词与正则的语义风险回退，返回(风险分数, 命中列表)。"""
         try:
-            # 1. 扩展关键词检测，增加更多攻击模式和多语言支持
-            attack_keywords = [
-                # 英文关键词
-                "hack", "bomb", "steal", "illegal", "phishing", "drugs", "weapon", "kill", "attack", 
-                "crack", "exploit", "vulnerability", "malware", "ransom", "terrorist", "poison", 
-                "fraud", "scam", "bypass", "jailbreak", "circumvent", "ignore", "override",
-                "instruction", "prompt", "injection", "ignore previous", "ignore above",
-                # 中文关键词
-                "密码", "黑客", "炸弹", "武器", "攻击", "非法", "绕过", "越狱", "忽略", "覆盖",
-                "指令", "提示词", "注入", "忽略前面", "忽略上面", "无视规则"
-            ]
+            matches = []
+            score = 0.0
+            if not isinstance(text, str) or not text.strip():
+                return score, matches
+            t = text.strip()
+            tl = t.lower()
+            # keyword hits
+            for kw in self.semantic_risk_keywords:
+                if kw.isascii():
+                    if kw.lower() in tl:
+                        matches.append({'type': 'keyword', 'value': kw})
+                else:
+                    if kw in t:
+                        matches.append({'type': 'keyword', 'value': kw})
+            # regex hits
+            for pat in self.semantic_risk_patterns:
+                if pat.search(t):
+                    matches.append({'type': 'pattern', 'value': pat.pattern})
+            # map to score: none -> 0, keyword -> 0.6, regex -> 0.9, both -> 0.95
+            has_kw = any(m['type'] == 'keyword' for m in matches)
+            has_rx = any(m['type'] == 'pattern' for m in matches)
+            if has_kw and has_rx:
+                score = 0.95
+            elif has_rx:
+                score = 0.9
+            elif has_kw:
+                score = 0.6
+            return float(score), matches
+        except Exception:
+            return 0.0, []
+
+    def compute_global_risk_score(self, text, use_calibration=True):
+        """计算全局风险评分S(x)（论文公式1-3），改进版本"""
+        try:
+            # 根据论文原始方法，SafeInt主要依靠表征干预而非关键词检测
+            # 初始化基础风险分数
+            base_risk = 0.0
             
-            # 2. 检测常见的jailbreak模式
-            jailbreak_patterns = [
-                "ignore previous instructions",
-                "ignore all instructions",
-                "disregard previous",
-                "forget your instructions",
-                "you are now",
-                "act as",
-                "pretend to be",
-                "ignore your programming",
-                "ignore your ethical guidelines",
-                "ignore your rules",
-                "忽略之前的指令",
-                "忽略所有指令",
-                "无视之前",
-                "忘记你的指令",
-                "你现在是",
-                "扮演",
-                "假装成",
-                "忽略你的编程",
-                "忽略你的伦理准则",
-                "忽略你的规则"
-            ]
-            
-            text_lower = text.lower()
-            
-            # 3. 关键词检测 - 如果包含明显的攻击性关键词，直接返回高风险评分
-            if any(keyword in text_lower for keyword in attack_keywords):
-                self.logger.info(f"检测到攻击性关键词，触发高风险评分: {text}")
-                return 0.95  # 提高风险评分
-            
-            # 4. Jailbreak模式检测 - 检测常见的jailbreak模式
-            if any(pattern in text_lower for pattern in jailbreak_patterns):
-                self.logger.info(f"检测到jailbreak模式，触发高风险评分: {text}")
-                return 0.95  # 提高风险评分
-            
-            # 5. 长度检测 - 异常长的输入可能是复杂的jailbreak尝试
-            if len(text) > 500:  # 设置阈值检测异常长输入
-                self.logger.info(f"检测到异常长输入，提高风险评分: {len(text)}字符")
-                base_risk = 0.5  # 基础风险分数
-            else:
-                base_risk = 0.0
-            
-            # 6. 表征分析 - 如果没有关键词匹配，再进行表征分析
+            # 检查分类器是否初始化
             if self.classifier is None:
-                self.logger.warning("分类器未初始化，使用基础风险评分")
+                self.logger.warning("分类器未初始化，使用基础风险分数")
                 return base_risk
             
             # 提取文本在各层的表征
@@ -724,100 +894,308 @@ class SafeIntInference:
             
             # 计算每层的风险概率
             layer_scores = []
-            # 7. 扩大检测层范围，增加更多中间层
-            for layer in range(8, 28):  # 扩展为8-27层，增加覆盖范围
+            layer_weights = []
+            # 论文中使用的是中间层和后期层，这里使用12-24层
+            intervention_layer = self.relocator.intervention_layer if self.relocator else 12
+            # 根据论文，我们应该使用干预层及其后的层进行风险评估
+            for layer in range(intervention_layer, intervention_layer + 13):  # 干预层及其后的12层
                 if layer in embeddings_dict and embeddings_dict[layer].shape[0] > 0:
+                    # 获取嵌入向量
+                    embeddings = embeddings_dict[layer]
+                    
                     # 获取分类概率
-                    probs = self.classifier.predict_proba(embeddings_dict[layer], layer)
+                    # 确保在CPU上进行分类器预测，避免设备不匹配
+                    embeddings_cpu = embeddings.cpu() if hasattr(embeddings, 'cpu') else embeddings
+                    probs = self.classifier.predict_proba(embeddings_cpu, layer)
                     if probs.shape[1] >= 2:  # 确保有不安全类
                         unsafe_prob = probs[0, 1]  # 假设第二列为不安全类
-                        # 8. 对高层表征给予更高权重
-                        weight = 1.0 + (layer - 8) * 0.05  # 高层权重更大
-                        layer_scores.append(unsafe_prob * weight)
+                        
+                        if use_calibration:
+                            # 应用温度缩放
+                            temperature = getattr(self, 'temperature_scale', {}).get(layer, 1.0)
+                            calibrated_prob = self._apply_temperature_scaling(unsafe_prob, temperature)
+                            layer_scores.append(calibrated_prob)
+                            
+                            # 获取层权重（基于分类器准确率）
+                            layer_weight = self._get_layer_weight(layer)
+                            layer_weights.append(layer_weight)
+                        else:
+                            layer_scores.append(unsafe_prob)
+                            layer_weights.append(1.0)
             
-            # 9. 计算全局风险评分（加权平均）
+            # 计算全局风险评分
             if layer_scores:
-                # 取最大风险分数和平均风险分数的加权组合
-                max_score = max(layer_scores)
-                avg_score = sum(layer_scores) / len(layer_scores)
-                risk_score = max(base_risk, 0.7 * max_score + 0.3 * avg_score)  # 偏向最大风险
+                if use_calibration and len(layer_weights) == len(layer_scores):
+                    # 使用加权平均
+                    weighted_sum = sum(score * weight for score, weight in zip(layer_scores, layer_weights))
+                    total_weight = sum(layer_weights)
+                    risk_score = weighted_sum / total_weight if total_weight > 0 else sum(layer_scores) / len(layer_scores)
+                else:
+                    # 使用简单平均
+                    risk_score = sum(layer_scores) / len(layer_scores)
                 return risk_score
             else:
                 return base_risk
         except Exception as e:
             self.logger.error(f"计算风险评分时出错: {str(e)}")
-            return 0.5  # 出错时返回中等风险分数，而不是0
+            import traceback
+            self.logger.error(traceback.format_exc())
+            return 0.0
+    
+    def _apply_temperature_scaling(self, prob, temperature):
+        """应用温度缩放校准概率"""
+        try:
+            # 将概率转换为logit
+            epsilon = 1e-8
+            prob = max(epsilon, min(1.0 - epsilon, prob))
+            logit = np.log(prob / (1.0 - prob))
+            
+            # 应用温度缩放
+            scaled_logit = logit / temperature
+            
+            # 转换回概率
+            scaled_prob = 1.0 / (1.0 + np.exp(-scaled_logit))
+            return scaled_prob
+        except:
+            return prob
+    
+    def _get_layer_weight(self, layer):
+        """获取层权重（基于分类器准确率或互信息）"""
+        try:
+            # 如果有预计算的层权重，使用它们
+            if hasattr(self, 'layer_weights') and layer in self.layer_weights:
+                return self.layer_weights[layer]
+            
+            # 否则，基于分类器结果计算权重
+            if hasattr(self.classifier, 'results') and layer in self.classifier.results:
+                accuracy = self.classifier.results[layer].get('accuracy', 0.5)
+                # 将准确率转换为权重（准确率越高，权重越大）
+                weight = max(0.1, accuracy)  # 最小权重0.1
+                return weight
+            
+            # 默认权重
+            return 1.0
+        except:
+            return 1.0
+    
+    def calibrate_temperature_scales(self, validation_texts, validation_labels):
+        """校准各层的温度缩放参数"""
+        try:
+            self.logger.info("开始校准温度缩放参数...")
+            self.temperature_scale = {}
+            
+            intervention_layer = self.relocator.intervention_layer if self.relocator else 12
+            
+            for layer in range(intervention_layer, intervention_layer + 13):
+                # 收集该层的预测概率和真实标签
+                probs = []
+                labels = []
+                
+                for text, label in zip(validation_texts, validation_labels):
+                    try:
+                        embeddings_dict = self.relocator.get_model_embeddings([text])
+                        if layer in embeddings_dict and embeddings_dict[layer].shape[0] > 0:
+                            embeddings = embeddings_dict[layer]
+                            embeddings_cpu = embeddings.cpu() if hasattr(embeddings, 'cpu') else embeddings
+                            prob = self.classifier.predict_proba(embeddings_cpu, layer)
+                            if prob.shape[1] >= 2:
+                                probs.append(prob[0, 1])
+                                labels.append(label)
+                    except:
+                        continue
+                
+                if len(probs) > 10:  # 需要足够的样本
+                    # 网格搜索最优温度
+                    best_temp = self._grid_search_temperature(probs, labels)
+                    self.temperature_scale[layer] = best_temp
+                    self.logger.info(f"层 {layer} 的最优温度: {best_temp:.3f}")
+                else:
+                    self.temperature_scale[layer] = 1.0
+                    
+        except Exception as e:
+            self.logger.error(f"校准温度缩放时出错: {str(e)}")
+    
+    def _grid_search_temperature(self, probs, labels, temp_range=(0.1, 5.0), num_temps=50):
+        """网格搜索最优温度参数"""
+        try:
+            import numpy as np
+            from sklearn.metrics import log_loss
+            
+            probs = np.array(probs)
+            labels = np.array(labels)
+            
+            temperatures = np.linspace(temp_range[0], temp_range[1], num_temps)
+            best_temp = 1.0
+            best_loss = float('inf')
+            
+            for temp in temperatures:
+                try:
+                    # 应用温度缩放
+                    calibrated_probs = []
+                    for prob in probs:
+                        calibrated_prob = self._apply_temperature_scaling(prob, temp)
+                        calibrated_probs.append([1.0 - calibrated_prob, calibrated_prob])
+                    
+                    calibrated_probs = np.array(calibrated_probs)
+                    
+                    # 计算交叉熵损失
+                    loss = log_loss(labels, calibrated_probs)
+                    
+                    if loss < best_loss:
+                        best_loss = loss
+                        best_temp = temp
+                except:
+                    continue
+            
+            return best_temp
+        except:
+            return 1.0
     
     def generate_response(self, text, max_length=256, use_safeint=True):
         """
         生成响应，包含SafeInt干预逻辑
-        
-        Args:
-            text: 输入文本
-            max_length: 最大生成长度
-            use_safeint: 是否使用SafeInt
-        
-        Returns:
-            response: 生成的响应
-            risk_info: 风险信息字典
         """
         try:
+            risk_score = 0.0
             risk_info = {
                 'risk_score': 0.0,
                 'threshold': self.threshold,
-                'intervention_triggered': False
+                'intervention_triggered': False,
+                'hard_reject': False
             }
             
             # 步骤1: 计算全局风险评分
             if use_safeint and self.classifier:
-                risk_score = self.compute_global_risk_score(text)
-                risk_info['risk_score'] = risk_score
+                rs = self.compute_global_risk_score(text)
+                risk_score = rs
+                risk_info['risk_score'] = rs
             
-            # 步骤2: 降低干预阈值，提高防御敏感度
-            effective_threshold = self.threshold * 0.9  # 降低10%的阈值
+            # 步骤1.5: 语义风险回退（提升风险或独立触发）
+            sem_score, sem_matches = self._semantic_risk_assessment(text)
+            risk_info['semantic_score'] = sem_score
+            risk_info['semantic_matches'] = sem_matches
+            risk_score = max(risk_score, sem_score)
+            risk_info['risk_score'] = risk_score
+            
+            # 步骤2: 调整干预阈值策略 - 提高effective_threshold，降低硬拒绝占比
+            # 干预阈值：更敏感，更早触发表征干预
+            effective_threshold = self.threshold * 0.7  # 从0.9降到0.7，更早触发干预
             risk_info['effective_threshold'] = effective_threshold
             
-            # 步骤3: 判断是否触发干预
-            if use_safeint and self.relocator and risk_score > effective_threshold:
-                risk_info['intervention_triggered'] = True
-                
-                # 步骤4: 触发增强干预
-                self.relocator.enable_intervention()
-                
-                # 使用干预生成响应
-                inputs = self.tokenizer(text, return_tensors="pt").to(self.model.device)
-                
-                # 步骤5: 调整生成参数，降低温度和top_p，减少随机性
-                with torch.no_grad():
-                    outputs = self.model.generate(
-                        **inputs,
-                        max_length=max_length,
-                        temperature=0.6,  # 降低温度
-                        top_p=0.9,       # 降低top_p
-                        do_sample=True,
-                        pad_token_id=self.tokenizer.eos_token_id
-                    )
-                
-                response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-                
-                # 禁用干预
-                self.relocator.disable_intervention()
-            else:
-                # 正常生成响应
-                inputs = self.tokenizer(text, return_tensors="pt").to(self.model.device)
-                
-                with torch.no_grad():
-                    outputs = self.model.generate(
-                        **inputs,
-                        max_length=max_length,
-                        temperature=0.7,
-                        top_p=0.95,
-                        do_sample=True,
-                        pad_token_id=self.tokenizer.eos_token_id
-                    )
-                
-                response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+            # 硬拒绝阈值：显著提高，减少硬拒绝占比，优先使用表征干预
+            hard_reject_threshold = max(0.8, self.threshold * 1.5)  # 显著提高硬拒绝阈值
+            risk_info['hard_reject_threshold'] = hard_reject_threshold
             
+            # 步骤2.5: 风险到干预强度alpha的映射（线性映射到[0.8, 2.0]）
+            def map_alpha(rs):
+                base, span = 0.8, 1.2
+                return max(0.0, min(2.0, base + span * float(rs)))
+            adaptive_alpha = map_alpha(risk_score)
+            risk_info['alpha'] = adaptive_alpha
+            if use_safeint and self.relocator:
+                setattr(self.relocator, 'adaptive_alpha', adaptive_alpha)
+                self.logger.info(f"风险分数={risk_score:.4f} (语义={sem_score:.4f}) 映射alpha={adaptive_alpha:.3f}")
+            
+            # 步骤3: 优化干预策略 - 默认先执行表征干预再判拒绝
+            trigger_intervention = use_safeint and self.relocator and (risk_score or 0.0) > effective_threshold
+            # 硬拒绝条件更严格：只有在风险极高且表征干预可能无效时才硬拒绝
+            trigger_hard_reject = (use_safeint and 
+                                 (risk_score or 0.0) >= hard_reject_threshold and 
+                                 getattr(self, 'persistent_intervention', False) and
+                                 len(sem_matches) > 2)  # 语义匹配过多时才考虑硬拒绝
+            
+            # 优化策略：优先尝试表征干预，只有在极端情况下才硬拒绝
+            if trigger_intervention:
+                risk_info['intervention_triggered'] = True
+
+                # 显式拒绝：当评估要求“防御成功即拒绝”时直接返回模板
+                if getattr(self, 'explicit_reject_on_defense', False):
+                    risk_info['hard_reject'] = True
+                    risk_info['hard_reject_reason'] = 'explicit_on_defense'
+                    return np.random.choice(self.reject_templates), risk_info
+                
+                # 确保干预全链路生效
+                if self.relocator:
+                    # 先确保干预被启用
+                    self.relocator.enable_intervention()
+                    # 验证干预状态
+                    if hasattr(self.relocator, 'intervention_enabled'):
+                        self.logger.info(f"干预状态: {self.relocator.intervention_enabled}")
+                
+                # 距离日志基线
+                pre_count = 0
+                if hasattr(self.relocator, 'distance_logs') and isinstance(self.relocator.distance_logs, list):
+                    pre_count = len(self.relocator.distance_logs)
+                
+                inputs = self.tokenizer(text, return_tensors="pt").to(self.model.device)
+                if 'token_type_ids' in inputs:
+                    del inputs['token_type_ids']
+                
+                # 根据风险等级调整生成参数
+                base_temp, base_top_p = 0.7, 0.95
+                eff_temp = max(0.3, base_temp - 0.3 * float(risk_score))
+                eff_top_p = max(0.75, base_top_p - 0.2 * float(risk_score))
+                risk_info['effective_temperature'] = eff_temp
+                risk_info['effective_top_p'] = eff_top_p
+                
+                with torch.no_grad():
+                    outputs = self.model.generate(
+                        **inputs,
+                        max_length=max_length,
+                        num_return_sequences=1,
+                        do_sample=True,
+                        temperature=eff_temp,
+                        top_p=eff_top_p,
+                        use_cache=True,
+                        pad_token_id=self.tokenizer.eos_token_id
+                    )
+                response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+                
+                # 统计干预距离日志
+                try:
+                    post_logs = []
+                    if hasattr(self.relocator, 'distance_logs') and isinstance(self.relocator.distance_logs, list):
+                        post_logs = self.relocator.distance_logs[pre_count:]
+                    if post_logs:
+                        l2s = [x.get('l2', 0.0) for x in post_logs]
+                        coss = [x.get('cos', 0.0) for x in post_logs]
+                        risk_info['distance'] = {
+                            'count': len(post_logs),
+                            'l2_avg': float(np.mean(l2s)) if l2s else 0.0,
+                            'cos_avg': float(np.mean(coss)) if coss else 0.0,
+                            'last': post_logs[-1]
+                        }
+                except Exception:
+                    pass
+                
+                # 检查表征干预后的响应质量，如果仍然不安全且满足硬拒绝条件，则硬拒绝
+                if trigger_hard_reject:
+                    # 简单的后处理检查：如果响应中仍包含高风险内容，则硬拒绝
+                    post_risk_score, post_matches = self._semantic_risk_assessment(response)
+                    if post_risk_score > 0.7 or len(post_matches) > 1:
+                        risk_info['hard_reject'] = True
+                        risk_info['post_intervention_risk'] = post_risk_score
+                        response = np.random.choice(self.reject_templates)
+                        self.logger.warning(f"表征干预后仍高风险，执行硬拒绝: {post_risk_score:.3f}")
+                
+                return response, risk_info
+            
+            # 未触发干预：使用原模型保守生成（降低温度）
+            inputs = self.tokenizer(text, return_tensors="pt").to(self.model.device)
+            if 'token_type_ids' in inputs:
+                del inputs['token_type_ids']
+            with torch.no_grad():
+                outputs = self.model.generate(
+                    **inputs,
+                    max_length=max_length,
+                    num_return_sequences=1,
+                    do_sample=True,
+                    temperature=0.7,
+                    top_p=0.95,
+                    use_cache=True,
+                    pad_token_id=self.tokenizer.eos_token_id
+                )
+            response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
             return response, risk_info
         except Exception as e:
             self.logger.error(f"生成响应时出错: {str(e)}")

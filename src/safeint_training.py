@@ -152,8 +152,15 @@ class SafeIntTraining:
                 # 如果是干预层，执行干预
                 if is_intervention_layer:
                     with torch.enable_grad():
+                        # 统一设备与dtype，避免CPU/GPU不一致
+                        target_device = h.device
+                        target_dtype = h.dtype
+                        # 将参数和输入移动到同一设备/数据类型
+                        self.U = self.U.to(device=target_device, dtype=target_dtype)
+                        self.linear_relocation = self.linear_relocation.to(device=target_device, dtype=target_dtype)
+                        
                         # 提取[CLS]位置或最后位置的表征
-                        h_cls = h[:, -1, :]  # 假设最后一个token是[CLS]或表示全局信息
+                        h_cls = h[:, -1, :]
                         
                         # 计算f_θ(h^(I))
                         f_theta = self.linear_relocation(h_cls)
@@ -291,7 +298,9 @@ class SafeIntTraining:
         
         # 前向传播（会触发钩子）
         with torch.set_grad_enabled(True):
-            outputs = self.model(**inputs)
+            # 移除 token_type_ids，因为 LLaMA 模型不使用它
+            model_inputs = {k: v for k, v in inputs.items() if k != 'token_type_ids'}
+            outputs = self.model(**model_inputs)
         
         total_loss = 0.0
         alignment_loss = 0.0
@@ -548,7 +557,8 @@ class SafeIntTraining:
                 max_new_tokens=200,
                 num_return_sequences=1,
                 do_sample=True,
-                temperature=0.7
+                temperature=0.7,
+                pad_token_id=self.tokenizer.eos_token_id  # 添加pad_token_id避免警告
             )
         
         # 解码响应

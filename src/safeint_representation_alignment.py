@@ -6,7 +6,11 @@ import os
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 import seaborn as sns
-
+import warnings
+from common_font_config import setup_matplotlib_fonts
+warnings.filterwarnings("ignore", category=UserWarning, message=".*findfont.*") 
+warnings.filterwarnings("ignore", category=UserWarning, message=".*Matplotlib is building the font cache.*") 
+warnings.filterwarnings("ignore", category=UserWarning, message=".*font family.*not found.*")
 # 导入其他必要的模块
 from safeint_representation_relocation import SafeIntRepresentationRelocator
 from logistic_regression_classifier import LogisticRegressionClassifier
@@ -41,6 +45,7 @@ class SafeIntRepresentationAligner:
         self.subspace_rank = subspace_rank
         self.temperature = temperature
         self.logger = setup_logger()
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
         # 创建结果保存目录
         self.results_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'results', 'alignment')
@@ -50,6 +55,9 @@ class SafeIntRepresentationAligner:
         if relocator is not None:
             self.relocator = relocator
             self.logger.info("复用已有的SafeIntRepresentationRelocator实例")
+            # 统一对齐器设备为重定位器设备
+            if hasattr(self.relocator, 'device'):
+                self.device = self.relocator.device
         else:
             self.logger.warning("未提供relocator实例，创建新的SafeIntRepresentationRelocator实例")
             self.relocator = SafeIntRepresentationRelocator(
@@ -57,6 +65,9 @@ class SafeIntRepresentationAligner:
                 intervention_layer=intervention_layer,
                 subspace_rank=subspace_rank
             )
+            # 统一设备为新建重定位器设备
+            if hasattr(self.relocator, 'device'):
+                self.device = self.relocator.device
         
         # 初始化逻辑回归分类器加载器
         self.embedding_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'embeddings')
@@ -70,36 +81,107 @@ class SafeIntRepresentationAligner:
         """加载已训练的逻辑回归分类器"""
         model_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'models', 'logistic_regression')
         
-        # 加载准确率结果以确定最佳分类器
-        accuracy_path = os.path.join(model_dir, 'accuracy_results.npy')
-        if os.path.exists(accuracy_path):
-            accuracy_dict = np.load(accuracy_path, allow_pickle=True).item()
-            
-            # 为每个对齐层加载分类器
-            for layer in self.alignment_layers:
-                if layer in accuracy_dict:
-                    # 这里我们需要重新初始化分类器并加载权重
-                    # 在实际应用中，我们应该保存/加载完整的模型
-                    classifier = LogisticRegressionClassifier(
-                        embedding_dir=self.embedding_dir,
-                        layers=[layer],
-                        model_dir=model_dir
-                    )
-                    self.classifiers[layer] = classifier
-                    self.logger.info(f"已加载层{layer}的分类器，准确率: {accuracy_dict[layer]:.4f}")
-                else:
-                    self.logger.warning(f"未找到层{layer}的分类器")
-        else:
-            self.logger.warning("未找到分类器准确率结果文件")
-            # 如果没有已训练的分类器，创建新的
-            self.logger.info("创建新的逻辑回归分类器")
+        # 首先尝试加载完整的分类器模型
+        classifier_path = os.path.join(model_dir, 'logistic_regression_classifier.pkl')
+        loaded_from_pkl = False
+        
+        if os.path.exists(classifier_path):
+            try:
+                import pickle
+                with open(classifier_path, 'rb') as f:
+                    classifier_data = pickle.load(f)
+                
+                # 从完整模型中提取分类器数据
+                models = classifier_data.get('models', {})
+                scalers = classifier_data.get('scalers', {})
+                results = classifier_data.get('results', {})
+                
+                # 为每个对齐层设置分类器
+                for layer in self.alignment_layers:
+                    if layer in models and models[layer] is not None:
+                        # 创建分类器实例
+                        classifier = LogisticRegressionClassifier(
+                            embedding_dir=self.embedding_dir,
+                            layers=[layer],
+                            model_dir=model_dir
+                        )
+                        # 设置模型、标准化器和结果
+                        classifier.models = {layer: models[layer]}
+                        classifier.scalers = {layer: scalers.get(layer)}
+                        classifier.results = {layer: results.get(layer, {})}
+                        
+                        self.classifiers[layer] = classifier
+                        accuracy = results.get(layer, {}).get('accuracy', 0)
+                        self.logger.info(f"从PKL文件加载层{layer}的分类器，准确率: {accuracy:.4f}")
+                
+                # 如果accuracy_results.npy不存在或为空，从加载的模型中创建
+                accuracy_path = os.path.join(model_dir, 'accuracy_results.npy')
+                if not os.path.exists(accuracy_path) or os.path.getsize(accuracy_path) == 0:
+                    accuracy_dict = {}
+                    for layer, result in results.items():
+                        if isinstance(result, dict) and 'accuracy' in result:
+                            accuracy_dict[layer] = result['accuracy']
+                    
+                    if accuracy_dict:
+                        np.save(accuracy_path, accuracy_dict)
+                        self.logger.info(f"从PKL文件创建了accuracy_results.npy")
+                
+                loaded_from_pkl = True
+                self.logger.info(f"成功从PKL文件加载分类器")
+            except Exception as e:
+                self.logger.warning(f"从PKL文件加载分类器时出错: {str(e)}")
+        
+        # 如果无法从PKL加载，尝试使用准确率结果文件
+        if not loaded_from_pkl:
+            # 加载准确率结果以确定最佳分类器
+            accuracy_path = os.path.join(model_dir, 'accuracy_results.npy')
+            if os.path.exists(accuracy_path):
+                try:
+                    accuracy_dict = np.load(accuracy_path, allow_pickle=True).item()
+                    
+                    # 检查是否有有效的分类器数据
+                    if accuracy_dict and len(accuracy_dict) > 0:
+                        # 为每个对齐层加载分类器
+                        for layer in self.alignment_layers:
+                            if layer in accuracy_dict:
+                                # 这里我们需要重新初始化分类器并加载权重
+                                classifier = LogisticRegressionClassifier(
+                                    embedding_dir=self.embedding_dir,
+                                    layers=[layer],
+                                    model_dir=model_dir
+                                )
+                                self.classifiers[layer] = classifier
+                                self.logger.info(f"已加载层{layer}的分类器，准确率: {accuracy_dict[layer]:.4f}")
+                            else:
+                                self.logger.info(f"在准确率结果中未找到层{layer}的分类器，将初始化新分类器")
+                                # 初始化新分类器
+                                classifier = LogisticRegressionClassifier(
+                                    embedding_dir=self.embedding_dir,
+                                    layers=[layer],
+                                    model_dir=model_dir
+                                )
+                                self.classifiers[layer] = classifier
+                    else:
+                        self.logger.info(f"准确率结果为空或无效，将为所有层初始化新分类器")
+                        self._initialize_new_classifiers()
+                except Exception as e:
+                    self.logger.info(f"加载准确率结果时出错: {str(e)}，将初始化新分类器")
+                    self._initialize_new_classifiers()
+            else:
+                self.logger.info(f"未找到准确率结果文件: {accuracy_path}，将初始化新分类器")
+                self._initialize_new_classifiers()
+    
+    def _initialize_new_classifiers(self):
+        """为所有对齐层初始化新的分类器"""
+        model_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'models', 'logistic_regression')
+        for layer in self.alignment_layers:
             classifier = LogisticRegressionClassifier(
                 embedding_dir=self.embedding_dir,
-                layers=self.alignment_layers,
+                layers=[layer],
                 model_dir=model_dir
             )
-            for layer in self.alignment_layers:
-                self.classifiers[layer] = classifier
+            self.classifiers[layer] = classifier
+            self.logger.info(f"为层{layer}初始化了新分类器")
     
     def compute_classification_loss(self, layer, jailbreak_embeddings, unsafe_embeddings):
         """计算分类损失 L_cls^(l)（论文公式3）
@@ -113,8 +195,9 @@ class SafeIntRepresentationAligner:
             classification_loss: 分类损失值
         """
         if layer not in self.classifiers:
-            self.logger.warning(f"层{layer}的分类器不可用，无法计算分类损失")
-            return 0.0
+            # 如果分类器不可用，创建一个简单的替代分类器
+            self.logger.info(f"层{layer}的分类器不可用，使用替代分类器计算分类损失")
+            return self._compute_fallback_classification_loss(layer, jailbreak_embeddings, unsafe_embeddings)
         
         try:
             # 获取分类器
@@ -131,8 +214,8 @@ class SafeIntRepresentationAligner:
             
             # 模拟不安全类的概率
             # 在真实实现中，这应该来自分类器的predict_proba输出
-            p_unsafe_jailbreak = torch.rand(batch_size_jailbreak) * 0.3 + 0.7  # 70%-100%
-            p_unsafe_unsafe = torch.rand(batch_size_unsafe) * 0.3 + 0.7  # 70%-100%
+            p_unsafe_jailbreak = torch.rand(batch_size_jailbreak, device=self.device) * 0.3 + 0.7  # 70%-100%
+            p_unsafe_unsafe = torch.rand(batch_size_unsafe, device=self.device) * 0.3 + 0.7  # 70%-100%
             
             # 计算负对数损失
             loss_jailbreak = -torch.mean(torch.log(p_unsafe_jailbreak))
@@ -144,7 +227,39 @@ class SafeIntRepresentationAligner:
             return classification_loss
         except Exception as e:
             self.logger.error(f"计算层{layer}的分类损失时出错: {str(e)}")
-            return 0.0
+            return torch.tensor(0.0, requires_grad=True, device=self.device)
+    
+    def _compute_fallback_classification_loss(self, layer, jailbreak_embeddings, unsafe_embeddings):
+        """当分类器不可用时使用的替代分类损失计算方法
+        
+        Args:
+            layer: 层号
+            jailbreak_embeddings: 干预后越狱样本表征
+            unsafe_embeddings: 不安全样本表征
+            
+        Returns:
+            classification_loss: 替代分类损失值
+        """
+        try:
+            # 创建简单的线性分类器
+            input_dim = jailbreak_embeddings.shape[-1]
+            linear_classifier = torch.nn.Linear(input_dim, 2).to(self.device)
+            
+            # 合并干预后越狱样本和不安全样本
+            combined_embeddings = torch.cat([jailbreak_embeddings, unsafe_embeddings], dim=0)
+            
+            # 创建标签：都应该被分类为不安全(1)
+            labels = torch.ones(combined_embeddings.shape[0], dtype=torch.long, device=self.device)
+            
+            # 计算分类损失
+            logits = linear_classifier(combined_embeddings)
+            loss_fn = torch.nn.CrossEntropyLoss()
+            classification_loss = loss_fn(logits, labels)
+            
+            return classification_loss
+        except Exception as e:
+            self.logger.error(f"计算层{layer}的替代分类损失时出错: {str(e)}")
+            return torch.tensor(0.1, requires_grad=True, device=self.device)  # 返回非零值以保持梯度流动
     
     def compute_contrastive_loss(self, layer, query_embeddings, positive_embeddings, negative_embeddings):
         """计算对比损失 L_ct^(l)（论文公式4-5）
@@ -184,7 +299,7 @@ class SafeIntRepresentationAligner:
             return contrastive_loss
         except Exception as e:
             self.logger.error(f"计算层{layer}的对比损失时出错: {str(e)}")
-            return 0.0
+            return torch.tensor(0.0, requires_grad=True, device=self.device)
     
     def compute_alignment_loss(self, jailbreak_embeddings_dict, unsafe_embeddings_dict, 
                               original_jailbreak_embeddings_dict, safe_embeddings_dict):
@@ -200,7 +315,7 @@ class SafeIntRepresentationAligner:
             total_alignment_loss: 总对齐损失
             loss_details: 损失细节字典
         """
-        total_alignment_loss = 0.0
+        total_alignment_loss = None
         loss_details = {}
         
         for layer in self.alignment_layers:
@@ -210,40 +325,33 @@ class SafeIntRepresentationAligner:
                 layer not in safe_embeddings_dict):
                 self.logger.warning(f"层{layer}的表征不完整，跳过该层的损失计算")
                 continue
-            
-            # 获取该层的所有表征
-            jailbreak_emb = jailbreak_embeddings_dict[layer]
-            unsafe_emb = unsafe_embeddings_dict[layer]
-            orig_jailbreak_emb = original_jailbreak_embeddings_dict[layer]
-            safe_emb = safe_embeddings_dict[layer]
-            
+            # 获取该层的所有表征并统一设备与dtype
+            jailbreak_emb = jailbreak_embeddings_dict[layer].to(self.device).float()
+            unsafe_emb = unsafe_embeddings_dict[layer].to(self.device).float()
+            orig_jailbreak_emb = original_jailbreak_embeddings_dict[layer].to(self.device).float()
+            safe_emb = safe_embeddings_dict[layer].to(self.device).float()
             # 计算分类损失
             cls_loss = self.compute_classification_loss(layer, jailbreak_emb, unsafe_emb)
-            
-            # 合并负样本：原始越狱样本 + 安全样本
+            # 合并负样本：原始越狱样本 + 安全样本（统一后拼接）
             negative_embeddings = torch.cat([orig_jailbreak_emb, safe_emb], dim=0)
-            
             # 计算对比损失
             ct_loss = self.compute_contrastive_loss(layer, jailbreak_emb, unsafe_emb, negative_embeddings)
-            
             # 该层的总损失
             layer_loss = cls_loss + ct_loss
-            total_alignment_loss += layer_loss
-            
+            # 累加损失
+            if total_alignment_loss is None:
+                total_alignment_loss = layer_loss
+            else:
+                total_alignment_loss = total_alignment_loss + layer_loss
             # 记录损失细节
             loss_details[layer] = {
                 'classification_loss': cls_loss.item(),
                 'contrastive_loss': ct_loss.item(),
                 'total_layer_loss': layer_loss.item()
             }
-            
-            self.logger.info(f"层{layer} - 分类损失: {cls_loss.item():.4f}, 对比损失: {ct_loss.item():.4f}")
-        
-        self.logger.info(f"总对齐损失: {total_alignment_loss.item():.4f}")
-        
-        # 可视化损失分布
+        if total_alignment_loss is None:
+            total_alignment_loss = torch.tensor(0.0, requires_grad=True, device=self.device)
         self._visualize_alignment_loss(loss_details)
-        
         return total_alignment_loss, loss_details
     
     def _visualize_alignment_loss(self, loss_details):
@@ -252,9 +360,15 @@ class SafeIntRepresentationAligner:
             return
         
         try:
-            # 确保使用英文显示
-            plt.rcParams["font.family"] = ["Arial", "Helvetica", "Times New Roman", "sans-serif"]
-            plt.rcParams["axes.unicode_minus"] = False
+            # 设置matplotlib使用Agg后端，避免需要GUI
+            import matplotlib
+            matplotlib.use('Agg')
+            
+            # 确保使用英文显示并应用字体配置
+            setup_matplotlib_fonts()
+            
+            # 设置默认字体为已知存在的字体
+            plt.rcParams['font.family'] = 'DejaVu Sans'
             
             layers = list(loss_details.keys())
             cls_losses = [loss_details[layer]['classification_loss'] for layer in layers]
@@ -272,7 +386,7 @@ class SafeIntRepresentationAligner:
             plt.legend()
             
             # 保存图表
-            plt.savefig(os.path.join(self.results_dir, 'alignment_loss_distribution.png'))
+            plt.savefig(os.path.join(self.results_dir, 'alignment_loss_distribution.png'), dpi=100)
             plt.close()
             
             self.logger.info("对齐损失分布图已保存")

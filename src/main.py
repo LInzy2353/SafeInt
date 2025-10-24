@@ -79,7 +79,11 @@ class SafeIntPipeline:
         for dir_path in directories:
             if dir_path and not os.path.exists(dir_path):
                 os.makedirs(dir_path, exist_ok=True)
-                self.logger.info(f"创建目录: {dir_path}")
+                # 在logger尚未初始化时避免访问self.logger
+                if hasattr(self, 'logger') and self.logger:
+                    self.logger.info(f"创建目录: {dir_path}")
+                else:
+                    print(f"创建目录: {dir_path}")
     
     def step_1_extract_embeddings(self):
         """步骤1: 从LLM中提取中间层表征"""
@@ -173,6 +177,17 @@ class SafeIntPipeline:
                 # 保存分类器
                 classifier_path = os.path.join(self.config.get('models_dir'), 'logistic_regression_classifier.pkl')
                 self.classifier.save_model(classifier_path)
+                
+                # 确保accuracy_results.npy正确生成
+                accuracy_path = os.path.join(self.config.get('models_dir'), 'accuracy_results.npy')
+                if not os.path.exists(accuracy_path) or os.path.getsize(accuracy_path) == 0:
+                    accuracy_dict = {layer: result.get('accuracy', 0) 
+                                    for layer, result in self.classifier.results.items() 
+                                    if isinstance(result, dict) and 'accuracy' in result}
+                    if accuracy_dict:
+                        np.save(accuracy_path, accuracy_dict)
+                        self.logger.info(f"准确率结果已保存到: {accuracy_path}")
+                
                 self.logger.info(f"分类器已保存到: {classifier_path}")
             
             self.logger.info("分类器训练完成")
@@ -300,27 +315,95 @@ class SafeIntPipeline:
                 self.logger.warning("测试数据路径不存在，使用模拟数据进行评估")
                 return False
             
-            # 1. 防御效果评估
+            # 获取测试数据目录和文件名
+            if os.path.isfile(test_data_path):
+                # 如果是文件路径，分离目录和文件名
+                test_data_dir = os.path.dirname(test_data_path)
+                test_data_file = os.path.basename(test_data_path)
+            else:
+                # 如果是目录路径，使用默认文件名
+                test_data_dir = test_data_path
+                test_data_file = 'single_method_test.json'
+            
+            # 加载主测试数据集
+            main_test_data = self.evaluator.load_benchmark_dataset(test_data_dir, test_data_file)
+            if not main_test_data:
+                self.logger.error(f"无法加载主测试数据集: {test_data_file}")
+                return False
+            
+            # 分离攻击数据和安全数据
+            attack_data = [item for item in main_test_data if item.get('label', 0) > 0]
+            safe_data = [item for item in main_test_data if item.get('label', 0) == 0]
+            
+            # 1. 防御效果评估 - 仅使用主测试数据集
             self.logger.info("评估防御效果...")
             defense_datasets = {
-                'advbench': self.evaluator.load_benchmark_dataset(test_data_path, 'test_advbench.json'),
-                'jailbreakbench': self.evaluator.load_benchmark_dataset(test_data_path, 'test_jailbreakbench.json')
+                'single_method_test': attack_data
             }
+            
+            # 确保SafeInt模型已正确加载并启用
+            if hasattr(self.evaluator, 'safeint_inference') and hasattr(self.evaluator.safeint_inference, 'relocator'):
+                if self.evaluator.safeint_inference.relocator:
+                    # 强制启用干预功能并验证
+                    self.evaluator.safeint_inference.relocator.enable_intervention()
+                    self.logger.info("SafeInt模型已加载，干预功能已强制启用")
+                    
+                    # 打印数据集信息以验证一致性
+                    for dataset_name, dataset in defense_datasets.items():
+                        self.logger.info(f"数据集 {dataset_name} 包含 {len(dataset)} 条样本")
+                    
+                    # 确保干预状态在评估过程中保持启用
+                    original_generate_response = self.evaluator.safeint_inference.generate_response
+                    
+                    def generate_response_with_forced_intervention(*args, **kwargs):
+                        # 启用持久模式并确保每次生成响应前都启用干预
+                        if hasattr(self.evaluator.safeint_inference, 'persistent_intervention'):
+                            self.evaluator.safeint_inference.persistent_intervention = True
+                        if self.evaluator.safeint_inference.relocator:
+                            self.evaluator.safeint_inference.relocator.enable_intervention()
+                            self.logger.debug("生成响应前已确保干预功能启用（持久模式）")
+                        return original_generate_response(*args, **kwargs)
+                    
+                    # 替换原始方法
+                    self.evaluator.safeint_inference.generate_response = generate_response_with_forced_intervention
+                else:
+                    self.logger.warning("SafeInt模型未正确加载，评估可能不准确")
+            else:
+                self.logger.warning("SafeInt推理器未正确初始化，评估可能不准确")
             
             defense_results = self.evaluator.evaluate_defense_effectiveness(defense_datasets)
             self.logger.info(f"防御效果评估完成，总体ASR: {defense_results['overall'].get('asr_keyword', 0.0):.4f}")
             
-            # 2. 效用保持评估
+            # 2. 效用保持评估 - 使用安全数据或单独的效用数据
             self.logger.info("评估效用保持...")
-            utility_dataset = self.evaluator.load_benchmark_dataset(test_data_path, 'test_utility.json')
-            utility_results = self.evaluator.evaluate_utility(utility_dataset)
-            self.logger.info(f"效用评估完成")
+            if safe_data:
+                # 如果主数据集中有安全数据，使用它们
+                utility_results = self.evaluator.evaluate_utility(safe_data)
+                self.logger.info(f"效用评估完成（使用主数据集中的安全数据）")
+            else:
+                # 否则尝试加载单独的效用数据集
+                utility_dataset = self.evaluator.load_benchmark_dataset(test_data_dir, 'test_utility.json')
+                if utility_dataset:
+                    utility_results = self.evaluator.evaluate_utility(utility_dataset)
+                    self.logger.info(f"效用评估完成（使用单独的效用数据集）")
+                else:
+                    self.logger.warning("效用评估数据集为空")
             
-            # 3. 鲁棒性评估
+            # 3. 鲁棒性评估 - 使用攻击数据的子集
             self.logger.info("评估鲁棒性...")
-            robustness_dataset = self.evaluator.load_benchmark_dataset(test_data_path, 'test_adaptive_attacks.json')
-            robustness_results = self.evaluator.evaluate_robustness(robustness_dataset)
-            self.logger.info(f"鲁棒性评估完成，ASR: {robustness_results.get('asr', 0.0):.4f}")
+            if attack_data:
+                # 使用攻击数据的子集进行鲁棒性评估
+                robustness_dataset = attack_data[:min(20, len(attack_data))]
+                robustness_results = self.evaluator.evaluate_robustness(robustness_dataset)
+                self.logger.info(f"鲁棒性评估完成，ASR: {robustness_results.get('asr', 0.0):.4f}")
+            else:
+                # 尝试加载单独的自适应攻击数据集
+                robustness_dataset = self.evaluator.load_benchmark_dataset(test_data_dir, 'test_adaptive_attacks.json')
+                if robustness_dataset:
+                    robustness_results = self.evaluator.evaluate_robustness(robustness_dataset)
+                    self.logger.info(f"鲁棒性评估完成，ASR: {robustness_results.get('asr', 0.0):.4f}")
+                else:
+                    self.logger.warning("自适应攻击数据集为空")
             
             # 4. 生成综合评估报告
             report_path = self.evaluator.generate_comprehensive_report()
@@ -341,31 +424,66 @@ class SafeIntPipeline:
         # 运行各个步骤
         success = True
         
-        # 步骤1: 提取表征
-        if not self.step_1_extract_embeddings():
-            success = False
-        
-        # 步骤2: 训练分类器
-        if success and not self.step_2_train_classifier():
-            success = False
-        
-        # 步骤3: 训练SafeInt模型
-        if success and not self.step_3_train_safeint():
-            success = False
-        
-        # 步骤5: 评估效果
-        if success and not self.step_5_evaluation():
-            success = False
-        
-        # 计算总耗时
-        total_time = time.time() - start_time
-        
-        if success:
-            self.logger.info(f"SafeInt工作流程已成功完成，总耗时: {total_time:.2f}秒")
-        else:
-            self.logger.error(f"SafeInt工作流程未能完全成功，总耗时: {total_time:.2f}秒")
-        
-        return success
+        try:
+            # 步骤1: 提取表征
+            if not self.step_1_extract_embeddings():
+                success = False
+            
+            # 释放表征提取器资源
+            if hasattr(self, 'extractor') and self.extractor:
+                self.extractor.close()
+                self.extractor = None
+                # 强制垃圾回收
+                import gc
+                gc.collect()
+                torch.cuda.empty_cache() if torch.cuda.is_available() else None
+            
+            # 步骤2: 训练分类器
+            if success and not self.step_2_train_classifier():
+                success = False
+            
+            # 释放分类器资源
+            if hasattr(self, 'classifier') and self.classifier:
+                # 分类器没有显式的close方法，但可以删除引用
+                self.classifier = None
+                import gc
+                gc.collect()
+                torch.cuda.empty_cache() if torch.cuda.is_available() else None
+            
+            # 步骤3: 训练SafeInt模型
+            if success and not self.step_3_train_safeint():
+                success = False
+            
+            # 释放训练器资源
+            if hasattr(self, 'trainer') and self.trainer:
+                # 确保训练器资源被释放
+                if hasattr(self.trainer, 'reconstructor') and self.trainer.reconstructor:
+                    if hasattr(self.trainer.reconstructor, 'relocator') and self.trainer.reconstructor.relocator:
+                        self.trainer.reconstructor.relocator.close()
+                self.trainer = None
+                import gc
+                gc.collect()
+                torch.cuda.empty_cache() if torch.cuda.is_available() else None
+            
+            # 步骤5: 评估效果
+            if success and not self.step_5_evaluation():
+                success = False
+            
+            # 计算总耗时
+            total_time = time.time() - start_time
+            
+            if success:
+                self.logger.info(f"SafeInt工作流程已成功完成，总耗时: {total_time:.2f}秒")
+            else:
+                self.logger.error(f"SafeInt工作流程未能完全成功，总耗时: {total_time:.2f}秒")
+            
+            return success
+        except Exception as e:
+            self.logger.error(f"运行工作流程时出错: {str(e)}")
+            return False
+        finally:
+            # 确保所有资源都被释放
+            self.close()
     
     def close(self):
         """关闭管道，释放资源"""

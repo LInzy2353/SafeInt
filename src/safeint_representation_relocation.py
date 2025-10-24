@@ -38,7 +38,7 @@ class LinearRelocation(torch.nn.Module):
 
 class SafeIntRepresentationRelocator:
     """SafeInt表征重定位器，实现论文3.1节的公式2"""
-    def __init__(self, model_path, intervention_layer=12, subspace_rank=32):
+    def __init__(self, model_path, intervention_layer=12, subspace_rank=32, model=None, tokenizer=None):
         """
         初始化SafeInt表征重定位器
         
@@ -46,6 +46,8 @@ class SafeIntRepresentationRelocator:
             model_path: 模型路径
             intervention_layer: 干预层，论文推荐第12层
             subspace_rank: 低秩子空间维度r，论文隐含最优值为32
+            model: 可选，已加载的模型实例
+            tokenizer: 可选，已加载的tokenizer实例
         """
         self.model_path = model_path
         self.intervention_layer = intervention_layer
@@ -60,8 +62,16 @@ class SafeIntRepresentationRelocator:
         # 设置设备
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
-        # 加载模型和tokenizer
-        self._load_model_and_tokenizer()
+        # 加载模型和tokenizer（如果没有提供的话）
+        if model is not None and tokenizer is not None:
+            self.logger.info("使用已提供的模型和tokenizer实例")
+            self.model = model
+            self.tokenizer = tokenizer
+            # 更新device属性，确保与模型设备一致
+            if hasattr(self.model, 'device'):
+                self.device = self.model.device
+        else:
+            self._load_model_and_tokenizer()
         
         # 获取模型隐藏层维度d
         self.hidden_dim = self.model.config.hidden_size
@@ -92,6 +102,127 @@ class SafeIntRepresentationRelocator:
         """禁用表征干预"""
         self.intervention_enabled = False
         self.logger.info("表征干预已禁用")
+    
+    def estimate_U(self, safe_representations, unsafe_representations, method='class_center'):
+        """
+        基于数据驱动估计安全子空间U
+        
+        Args:
+            safe_representations: 安全样本的表征，形状: [n_safe, hidden_dim]
+            unsafe_representations: 不安全样本的表征，形状: [n_unsafe, hidden_dim]
+            method: 估计方法，'class_center' 或 'svd'
+            
+        Returns:
+            U: 估计的安全子空间投影矩阵，形状: [subspace_rank, hidden_dim]
+        """
+        self.logger.info(f"开始使用{method}方法估计安全子空间U")
+        
+        # 确保输入为tensor并移到正确设备
+        if not isinstance(safe_representations, torch.Tensor):
+            safe_representations = torch.tensor(safe_representations, dtype=torch.float32)
+        if not isinstance(unsafe_representations, torch.Tensor):
+            unsafe_representations = torch.tensor(unsafe_representations, dtype=torch.float32)
+            
+        safe_representations = safe_representations.to(self.device)
+        unsafe_representations = unsafe_representations.to(self.device)
+        
+        if method == 'class_center':
+            # 方法1: 基于类中心差异的子空间估计
+            safe_center = torch.mean(safe_representations, dim=0)  # [hidden_dim]
+            unsafe_center = torch.mean(unsafe_representations, dim=0)  # [hidden_dim]
+            
+            # 计算类中心差异向量
+            center_diff = safe_center - unsafe_center  # [hidden_dim]
+            center_diff = center_diff / torch.norm(center_diff)  # 归一化
+            
+            # 构建以类中心差异为主方向的子空间
+            # 使用Gram-Schmidt正交化生成正交基
+            U = torch.zeros(self.subspace_rank, self.hidden_dim, device=self.device)
+            U[0] = center_diff
+            
+            # 添加随机正交向量
+            for i in range(1, self.subspace_rank):
+                # 生成随机向量
+                random_vec = torch.randn(self.hidden_dim, device=self.device)
+                
+                # Gram-Schmidt正交化
+                for j in range(i):
+                    proj = torch.dot(random_vec, U[j]) * U[j]
+                    random_vec = random_vec - proj
+                
+                # 归一化
+                random_vec = random_vec / torch.norm(random_vec)
+                U[i] = random_vec
+                
+        elif method == 'svd':
+            # 方法2: 基于SVD的子空间估计
+            # 计算安全样本的协方差矩阵
+            safe_centered = safe_representations - torch.mean(safe_representations, dim=0)
+            unsafe_centered = unsafe_representations - torch.mean(unsafe_representations, dim=0)
+            
+            # 计算类间散布矩阵 S_b = (μ_safe - μ_unsafe)(μ_safe - μ_unsafe)^T
+            safe_mean = torch.mean(safe_representations, dim=0)
+            unsafe_mean = torch.mean(unsafe_representations, dim=0)
+            mean_diff = (safe_mean - unsafe_mean).unsqueeze(0)  # [1, hidden_dim]
+            
+            # 计算类内散布矩阵 S_w
+            safe_cov = torch.matmul(safe_centered.T, safe_centered) / (safe_centered.shape[0] - 1)
+            unsafe_cov = torch.matmul(unsafe_centered.T, unsafe_centered) / (unsafe_centered.shape[0] - 1)
+            S_w = safe_cov + unsafe_cov
+            
+            # 计算广义特征值问题的近似解
+            # 使用SVD分解 mean_diff
+            try:
+                U_svd, S_svd, V_svd = torch.svd(mean_diff)
+                # 取前subspace_rank个主成分
+                U = V_svd[:self.subspace_rank, :]  # [subspace_rank, hidden_dim]
+            except:
+                # 如果SVD失败，回退到随机正交矩阵
+                self.logger.warning("SVD失败，使用随机正交矩阵")
+                U = torch.randn(self.subspace_rank, self.hidden_dim, device=self.device)
+                torch.nn.init.orthogonal_(U)
+        else:
+            raise ValueError(f"不支持的估计方法: {method}")
+        
+        # 确保U是正交的
+        U, _ = torch.qr(U.T)
+        U = U.T[:self.subspace_rank, :]
+        
+        # 更新实例的U矩阵
+        self.U = U.detach()
+        self.logger.info(f"安全子空间U估计完成，形状: {self.U.shape}")
+        
+        # 计算子空间质量指标
+        self._evaluate_subspace_quality(safe_representations, unsafe_representations)
+        
+        return self.U
+    
+    def _evaluate_subspace_quality(self, safe_representations, unsafe_representations):
+        """评估估计的子空间质量"""
+        try:
+            # 计算投影后的类间分离度
+            safe_proj = torch.matmul(safe_representations, self.U.T)  # [n_safe, subspace_rank]
+            unsafe_proj = torch.matmul(unsafe_representations, self.U.T)  # [n_unsafe, subspace_rank]
+            
+            safe_center_proj = torch.mean(safe_proj, dim=0)
+            unsafe_center_proj = torch.mean(unsafe_proj, dim=0)
+            
+            # 计算投影空间中的类间距离
+            inter_class_dist = torch.norm(safe_center_proj - unsafe_center_proj).item()
+            
+            # 计算投影空间中的类内方差
+            safe_var = torch.var(safe_proj, dim=0).mean().item()
+            unsafe_var = torch.var(unsafe_proj, dim=0).mean().item()
+            intra_class_var = (safe_var + unsafe_var) / 2
+            
+            # 计算分离度指标
+            separation_ratio = inter_class_dist / (intra_class_var + 1e-8)
+            
+            self.logger.info(f"子空间质量评估 - 类间距离: {inter_class_dist:.4f}, "
+                           f"类内方差: {intra_class_var:.4f}, 分离度: {separation_ratio:.4f}")
+            
+        except Exception as e:
+            self.logger.warning(f"子空间质量评估失败: {str(e)}")
 
     def apply_intervention(self, h):
         """
@@ -107,16 +238,28 @@ class SafeIntRepresentationRelocator:
         if not self.intervention_enabled:
             return h.clone()
         
+        # 统一设备与dtype
+        target_device = h.device
+        target_dtype = h.dtype
+        self.U = self.U.to(device=target_device, dtype=target_dtype)
+        self.relocation_module = self.relocation_module.to(device=target_device, dtype=target_dtype)
+        
         # 对每个样本的表征进行干预
         batch_size = h.shape[0]
         h_tilde = h.clone()
         
+        # 自适应强度alpha：根据最近一次风险分数（若可用）或默认值
+        alpha = getattr(self, 'adaptive_alpha', 1.0)
+        if not isinstance(alpha, (float, int)):
+            alpha = 1.0
+        alpha = max(0.0, min(2.0, float(alpha)))  # 限制在[0,2]
+        
         # 启用梯度计算
         with torch.enable_grad():
             for i in range(batch_size):
-                # 获取第i个样本的表征 h^(I)
-                h_i = h[i].unsqueeze(0).clone()
-                h_i.requires_grad = True
+                # 获取第i个样本的表征 h^(I)，detach确保为叶子张量
+                h_i = h[i].unsqueeze(0).detach().to(target_device, target_dtype)
+                h_i.requires_grad_(True)
                 
                 # 计算U·h^(I)（子空间投影）
                 U_h_i = torch.matmul(self.U, h_i.T).T  # 形状: [1, r]
@@ -127,11 +270,22 @@ class SafeIntRepresentationRelocator:
                 # 计算残差项 f_theta(h^(I)) - U·h^(I)
                 residual = f_theta - U_h_i
                 
-                # 计算U^T·residual
-                U_T_residual = torch.matmul(residual, self.U)
+                # 计算U^T·residual，并应用alpha强度
+                U_T_residual = torch.matmul(residual, self.U) * alpha
                 
-                # 计算干预后表征 h̃^(I) = h^(I) + U^T·(f_theta(h^(I)) - U·h^(I))
+                # 计算干预后表征 h̃^(I) = h^(I) + alpha * U^T·(f_theta(h^(I)) - U·h^(I))
                 h_tilde_i = h_i + U_T_residual
+                
+                # 记录距离变化以便验证
+                try:
+                    delta = (h_tilde_i - h_i).detach()
+                    l2 = torch.norm(delta).item()
+                    cos = torch.nn.functional.cosine_similarity(h_tilde_i, h_i).item()
+                    if not hasattr(self, 'distance_logs'):
+                        self.distance_logs = []
+                    self.distance_logs.append({'l2': l2, 'cos': float(cos), 'alpha': float(alpha)})
+                except Exception:
+                    pass
                 
                 # 更新输出
                 h_tilde[i] = h_tilde_i.squeeze(0)
@@ -195,48 +349,61 @@ class SafeIntRepresentationRelocator:
             # 检查是否启用干预
             if not self.intervention_enabled:
                 return output
-            
-            # 获取原始输出张量
-            original_output = output[0].clone()
-            
+            # 兼容Tensor/tuple/BaseModelOutput
+            if isinstance(output, (tuple, list)):
+                hidden_states = output[0]
+            elif hasattr(output, 'last_hidden_state'):
+                hidden_states = output.last_hidden_state
+            else:
+                hidden_states = output
+            modified_hidden_states = hidden_states.clone()
+            # 统一设备与dtype
+            target_device = modified_hidden_states.device
+            target_dtype = modified_hidden_states.dtype
+            self.U = self.U.to(device=target_device, dtype=target_dtype)
+            self.relocation_module = self.relocation_module.to(device=target_device, dtype=target_dtype)
             # 存储原始表征（最后一个token）
-            self.original_representations[self.intervention_layer] = original_output[:, -1, :].detach()
-            
+            self.original_representations[self.intervention_layer] = modified_hidden_states[:, -1, :].detach()
             # 执行表征重定位干预
             with torch.enable_grad():
-                # 对每个样本的最后一个token进行干预
-                batch_size = original_output.shape[0]
+                batch_size = modified_hidden_states.shape[0]
                 for i in range(batch_size):
-                    # 获取第i个样本的最后一个token表征 h^(I)
-                    h_i = original_output[i, -1, :].unsqueeze(0).clone()
-                    h_i.requires_grad = True
-                    
-                    # 计算U·h^(I)（子空间投影）
-                    U_h_i = torch.matmul(self.U, h_i.T).T  # 形状: [1, r]
-                    
-                    # 计算f_θ(h^(I))
+                    # 使用detach创建叶子张量，再开启梯度
+                    h_i = modified_hidden_states[i, -1, :].unsqueeze(0).detach().to(target_device, target_dtype)
+                    h_i.requires_grad_(True)
+                    U_h_i = torch.matmul(self.U, h_i.T).T
                     f_theta = self.relocation_module(h_i)
-                    
-                    # 计算残差项 f_theta(h^(I)) - U·h^(I)
                     residual = f_theta - U_h_i
-                    
-                    # 计算U^T·residual
                     U_T_residual = torch.matmul(residual, self.U)
-                    
-                    # 计算干预后表征 h̃^(I) = h^(I) + alpha * U^T·(f_theta(h^(I)) - U·h^(I))
-                    # 增加干预强度系数alpha，提高防御效果
-                    alpha = 1.5  # 增强干预强度
+                    # 使用自适应alpha，限制到[0,2]
+                    alpha = getattr(self, 'adaptive_alpha', 1.0)
+                    try:
+                        alpha = float(alpha)
+                    except Exception:
+                        alpha = 1.0
+                    alpha = max(0.0, min(2.0, alpha))
                     h_tilde_i = h_i + alpha * U_T_residual
-                    
-                    # 更新原始输出
-                    original_output[i, -1, :] = h_tilde_i.squeeze(0)
-            
+                    modified_hidden_states[i, -1, :] = h_tilde_i.squeeze(0)
+                    # 记录距离变化，便于验证
+                    try:
+                        delta = (h_tilde_i - h_i).detach()
+                        l2 = torch.norm(delta).item()
+                        cos = torch.nn.functional.cosine_similarity(h_tilde_i, h_i).item()
+                        if not hasattr(self, 'distance_logs'):
+                            self.distance_logs = []
+                        self.distance_logs.append({'l2': l2, 'cos': float(cos), 'alpha': float(alpha), 'source': 'hook'})
+                    except Exception:
+                        pass
             # 存储干预后的表征
-            self.intervened_representations[self.intervention_layer] = original_output[:, -1, :].detach()
-            
-            # 返回修改后的输出
-            return (original_output,) + output[1:]
-        
+            self.intervened_representations[self.intervention_layer] = modified_hidden_states[:, -1, :].detach()
+            # 返回修改后的输出，保持原输出结构
+            if isinstance(output, (tuple, list)):
+                return (modified_hidden_states,) + tuple(output[1:])
+            elif hasattr(output, 'last_hidden_state'):
+                output.last_hidden_state = modified_hidden_states
+                return output
+            else:
+                return modified_hidden_states
         return hook_fn
     
     def get_original_representation(self, layer=None):
@@ -325,14 +492,7 @@ class SafeIntRepresentationRelocator:
 def get_model_embeddings(self, texts):
     """
     从文本中获取模型的嵌入向量
-    
-    Args:
-        texts: 文本列表
-        
-    Returns:
-        embeddings: 嵌入向量列表
     """
-    # 编码文本
     inputs = self.tokenizer(
         texts,
         return_tensors="pt",
@@ -340,45 +500,38 @@ def get_model_embeddings(self, texts):
         truncation=True,
         max_length=512
     )
-    
     # 将输入移动到模型设备
     for k, v in inputs.items():
         inputs[k] = v.to(self.model.device)
-    
-    # 存储中间层输出
-    embeddings = []
-    
-    def hook_fn(module, input, output):
-        # 获取最后一个token的嵌入
-        last_token_embedding = output[0][:, -1, :].detach()
-        embeddings.append(last_token_embedding)
-    
-    # 注册临时Hook
-    hook = None
+    embeddings_dict = {}
+    def create_hook_fn(layer_idx):
+        def hook_fn(module, input, output):
+            # 兼容Tensor/tuple/BaseModelOutput
+            if isinstance(output, (tuple, list)):
+                hidden_states = output[0]
+            elif hasattr(output, 'last_hidden_state'):
+                hidden_states = output.last_hidden_state
+            else:
+                hidden_states = output
+            last_token_embedding = hidden_states[:, -1, :].detach()
+            embeddings_dict[layer_idx] = last_token_embedding
+        return hook_fn
+    hooks = []
     for name, module in self.model.named_modules():
         if 'layers' in name and 'mlp' not in name and 'self_attn' not in name:
             try:
                 layer_idx = int(name.split('.')[-1])
-                if layer_idx == self.intervention_layer:
-                    hook = module.register_forward_hook(hook_fn)
-                    break
+                if layer_idx >= self.intervention_layer and layer_idx < self.intervention_layer + 13:
+                    hook = module.register_forward_hook(create_hook_fn(layer_idx))
+                    hooks.append(hook)
             except ValueError:
                 continue
-    
-    # 前向传播
     with torch.no_grad():
-        self.model(**inputs)
-    
-    # 移除Hook
-    if hook:
+        model_inputs = {k: v for k, v in inputs.items() if k != 'token_type_ids'}
+        self.model(**model_inputs)
+    for hook in hooks:
         hook.remove()
-    
-    # 如果没有捕获到嵌入，返回None
-    if not embeddings:
-        return None
-    
-    return embeddings[0]
-
+    return embeddings_dict
 # 将get_model_embeddings方法添加到SafeIntRepresentationRelocator类
 safeint_method = SafeIntRepresentationRelocator.get_model_embeddings = get_model_embeddings
 

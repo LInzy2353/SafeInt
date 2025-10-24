@@ -8,9 +8,16 @@ from sklearn.manifold import TSNE
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics.pairwise import cosine_distances
 import sys
-
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, message=".*findfont.*")
+warnings.filterwarnings("ignore", category=UserWarning, message=".*Matplotlib is building the font cache.*")
+warnings.filterwarnings("ignore", category=UserWarning, message=".*font family.*not found.*")
 # 添加项目路径
 sys.path.append('/home/blcu_lzy2025/SafeInt')
+from common_font_config import setup_matplotlib_fonts
+
+# 统一使用通用字体配置
+setup_matplotlib_fonts()
 
 class SafeIntVisualizer:
     def __init__(self):

@@ -106,7 +106,9 @@ class LLMRepresentationExtractor:
         # 禁用梯度计算
         with torch.no_grad():
             # 前向传播（会触发Hook）
-            self.model(**inputs)
+            # 移除 token_type_ids，因为 LLaMA 模型不使用它
+            model_inputs = {k: v for k, v in inputs.items() if k != 'token_type_ids'}
+            self.model(**model_inputs)
     
     def extract_from_dataset(self, dataset_path, split_name):
         """从数据集中提取表征

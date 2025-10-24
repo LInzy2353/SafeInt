@@ -3,12 +3,22 @@ import torch
 import numpy as np
 import logging
 import os
+import warnings
+import matplotlib
+# 设置非交互式后端
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+# 过滤matplotlib字体相关警告
+warnings.filterwarnings("ignore", category=UserWarning, message=".*findfont.*")
+warnings.filterwarnings("ignore", category=UserWarning, message=".*Matplotlib is building the font cache.*")
+warnings.filterwarnings("ignore", category=UserWarning, message=".*font family.*not found.*")
 
 # 导入其他必要的模块
 from safeint_representation_relocation import SafeIntRepresentationRelocator
 from safeint_representation_alignment import SafeIntRepresentationAligner
+from common_font_config import setup_matplotlib_fonts
 
 # 配置日志
 def setup_logger():
@@ -147,18 +157,18 @@ class SafeIntRepresentationReconstructor:
             
             # 记录损失组件
             loss_components = {
-                'alignment_loss': alignment_loss.item(),
-                'safe_reconstruction_loss': safe_recon_loss.item(),
-                'unsafe_reconstruction_loss': unsafe_recon_loss.item(),
-                'total_reconstruction_loss': total_recon_loss.item(),
-                'total_loss': total_loss.item()
+                'alignment_loss': float(alignment_loss),
+                'safe_reconstruction_loss': float(safe_recon_loss),
+                'unsafe_reconstruction_loss': float(unsafe_recon_loss),
+                'total_reconstruction_loss': float(total_recon_loss),
+                'total_loss': float(total_loss)
             }
             
-            self.logger.info(f"总损失: {total_loss.item():.4f}")
-            self.logger.info(f"  - 对齐损失 (x{self.alpha}): {alignment_loss.item():.4f}")
-            self.logger.info(f"  - 重建损失 (x{self.beta}): {total_recon_loss.item():.4f}")
-            self.logger.info(f"    - 安全样本重建损失: {safe_recon_loss.item():.4f}")
-            self.logger.info(f"    - 不安全样本重建损失: {unsafe_recon_loss.item():.4f}")
+            self.logger.info(f"总损失: {float(total_loss):.4f}")
+            self.logger.info(f"  - 对齐损失 (x{self.alpha}): {float(alignment_loss):.4f}")
+            self.logger.info(f"  - 重建损失 (x{self.beta}): {float(total_recon_loss):.4f}")
+            self.logger.info(f"    - 安全样本重建损失: {float(safe_recon_loss):.4f}")
+            self.logger.info(f"    - 不安全样本重建损失: {float(unsafe_recon_loss):.4f}")
             
             # 可视化损失组件
             self._visualize_loss_components(loss_components)
@@ -174,9 +184,8 @@ class SafeIntRepresentationReconstructor:
             return
         
         try:
-            # 确保使用英文显示
-            plt.rcParams["font.family"] = ["Arial", "Helvetica", "Times New Roman", "sans-serif"]
-            plt.rcParams["axes.unicode_minus"] = False
+            # 统一使用通用字体配置
+            setup_matplotlib_fonts()
             
             # 准备数据
             components = ['Alignment Loss', 'Safe Reconstruction Loss', 'Unsafe Reconstruction Loss', 'Total Loss']
@@ -192,40 +201,22 @@ class SafeIntRepresentationReconstructor:
             
             # 对齐损失部分
             align_bar = plt.bar(components[0], values[0], color='red', label='Alignment Loss (x{})'.format(self.alpha))
-            
             # 重建损失部分
-            safe_recon_bar = plt.bar(components[1], values[1], color='blue', label='Safe Reconstruction Loss (x{})'.format(self.beta))
-            unsafe_recon_bar = plt.bar(components[2], values[2], color='green', label='Unsafe Reconstruction Loss (x{})'.format(self.beta))
-            
-            # 总损失部分
+            recon_bar_safe = plt.bar(components[1], values[1], color='blue', label='Safe Reconstruction Loss (x{})'.format(self.beta))
+            recon_bar_unsafe = plt.bar(components[2], values[2], color='green', label='Unsafe Reconstruction Loss (x{})'.format(self.beta))
             total_bar = plt.bar(components[3], values[3], color='purple', label='Total Loss')
             
-            # 添加数值标签
-            def add_labels(bars):
-                for bar in bars:
-                    height = bar.get_height()
-                    plt.text(bar.get_x() + bar.get_width()/2., height, 
-                             '{:.4f}'.format(height), 
-                             ha='center', va='bottom')
-            
-            add_labels(align_bar)
-            add_labels(safe_recon_bar)
-            add_labels(unsafe_recon_bar)
-            add_labels(total_bar)
-            
-            plt.title('SafeInt Loss Components')
+            plt.title('Loss Components Distribution')
             plt.ylabel('Loss Value')
-            plt.grid(True, axis='y', linestyle='--', alpha=0.7)
+            plt.grid(True, linestyle='--', alpha=0.7, axis='y')
             plt.legend()
             
             # 保存图表
             plt.tight_layout()
-            plt.savefig(os.path.join(self.results_dir, 'loss_components.png'))
+            plt.savefig(os.path.join(self.model_dir, 'loss_components.png'))
             plt.close()
-            
-            self.logger.info("损失组件图已保存")
         except Exception as e:
-            self.logger.error(f"可视化损失组件时出错: {str(e)}")
+            self.logger.error(f"可视化损失组件分布时出错: {str(e)}")
     
     def get_model_parameters(self):
         """获取需要训练的模型参数"""

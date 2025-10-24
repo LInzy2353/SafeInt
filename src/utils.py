@@ -2,14 +2,23 @@ import os
 import json
 import torch
 import numpy as np
+import warnings
+import matplotlib
+# 设置非交互式后端
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from sklearn.preprocessing import StandardScaler
+from common_font_config import setup_matplotlib_fonts
 
-# 配置中文字体
-plt.rcParams["font.family"] = ["SimHei", "WenQuanYi Micro Hei", "Heiti TC"]
-plt.rcParams["axes.unicode_minus"] = False  # 解决负号显示问题
+# 过滤matplotlib字体相关警告
+warnings.filterwarnings("ignore", category=UserWarning, message=".*findfont.*")
+warnings.filterwarnings("ignore", category=UserWarning, message=".*Matplotlib is building the font cache.*")
+warnings.filterwarnings("ignore", category=UserWarning, message=".*font family.*not found.*")
+
+# 配置字体
+setup_matplotlib_fonts()
 
 # 全局配置
 DEFAULT_MODEL = "lmsys/vicuna-7b-v1.5"

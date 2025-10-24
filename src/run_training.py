@@ -4,11 +4,20 @@ import os
 import sys
 import argparse
 import json
+import warnings
+
+# 抑制transformers库的弃用警告
+warnings.filterwarnings("ignore", category=FutureWarning, module="transformers")
+warnings.filterwarnings("ignore", category=UserWarning, module="transformers")
+
+# 添加项目根目录到路径
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import matplotlib.pyplot as plt
 from main import SafeIntPipeline
+from common_font_config import setup_matplotlib_fonts
 
-# 确保中文显示正常
-plt.rcParams["font.family"] = ["SimHei", "WenQuanYi Micro Hei", "Heiti TC"]
+# 统一使用通用字体配置，避免中文特定字体依赖
+setup_matplotlib_fonts()
 
 
 def parse_arguments():
